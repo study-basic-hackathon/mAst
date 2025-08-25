@@ -1,0 +1,58 @@
+services:
+  # Reactフロントエンドサービス
+  frontend:
+    container_name: react_frontend
+    build:
+      context: ./frontend
+      dockerfile: ./docker/Dockerfile
+    restart: always
+    volumes:
+      # ホストのコードをコンテナにマウント（開発用）
+      - ./frontend:/app
+      - /app/node_modules
+    # ビルド後の成果物をvolumesとして定義
+    expose:
+      - "5173"
+    ports:
+      - "5173:5173"
+    command: npm run dev
+
+  # FastAPIバックエンドサービス
+  backend:
+    container_name: fastapi_backend
+    build:
+      context: ./backend
+      dockerfile: ./docker/Dockerfile
+    restart: always
+    volumes:
+      # ホストのコードをコンテナにマウント
+      - ./backend:/app
+    expose:
+      - "8000"
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+  # MySQLデータベースサービス
+  db:
+    container_name: mysql_db
+    image: mysql:8.0
+    restart: always
+    environment:
+      # MySQLのrootパスワードを設定
+      MYSQL_ROOT_PASSWORD: password
+      # デフォルトデータベースを設定
+      MYSQL_DATABASE: myappdb
+    # MySQLのポートを外部に公開する場合
+    ports:
+      - "3306:3306"
+    volumes:
+      # データベースのデータを永続化
+      - db_data:/var/lib/mysql
+      # 起動時に実行される初期化SQLスクリプトをマウント
+      - ./database/initdb.sql:/docker-entrypoint-initdb.d/initdb.sql
+
+# 永続化のためのボリュームを定義
+volumes:
+  db_data:

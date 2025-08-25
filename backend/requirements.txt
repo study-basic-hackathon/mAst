@@ -1,0 +1,6 @@
+# Pythonの依存関係
+fastapi==0.101.1
+uvicorn==0.23.2
+python-dotenv==1.0.0
+# MySQLとの接続に必要
+mysql-connector-python==8.0.33
