@@ -56,14 +56,15 @@ function App() {
     <div className="App" style={{ display: 'flex', height: '100vh' }}>
 
       {/* サイドバー */}
-      <div className="sidebar" style={{display: 'flex', flexDirection: 'column', height: '100%'}}>
-        {/* TODO:ホバー時、背景色を変える */}
-        <div className='sidebar_header' style={{ padding: '10px', borderBottom: '1px solid #ccc' }}>
-          <div className='sidebar_toggle' onClick={toggleSidebar} style={{width: '100%', padding: '10px', textAlign: 'left', fontSize: '16px', cursor: 'pointer' }}>
-            {sidebarCollapsed ? <TfiMenu/> : <><TfiClose/> mAst</> }
-          </div>
+      <div className="sidebar" style={{display: 'flex', padding: '10px', flexDirection: 'column', height: '100%'}}>
+        <div className='sidebar_header' style={{ borderBottom: '1px solid #ccc' }}>
+          <Sidebar collapsed={sidebarCollapsed}>
+            <Menu>
+              <MenuItem onClick={toggleSidebar}>{sidebarCollapsed ? <TfiMenu/> : <><TfiClose/> mAst</> }</MenuItem>
+            </Menu>
+          </Sidebar>
         </div>
-        <div className="sidebar_body" style={{ flex: 1, overflowY: 'auto' }}>
+        <div className="sidebar_body">
           <Sidebar collapsed={sidebarCollapsed}>
             <Menu>
               <MenuItem><FaSearch /> {sidebarCollapsed ? "" : "検索・一覧"}</MenuItem>
@@ -72,10 +73,12 @@ function App() {
           </Sidebar>
         </div>
         {/* TODO:ホバー時、背景色を変える */}
-        <div className="sidebar_footer" style={{ padding: '10px', borderTop: '1px solid #ccc', marginTop: 'auto' }}>
-          <div style={{width: '100%', padding: '10px', fontSize: '16px', textAlign: 'left', cursor: 'pointer' }}>
-            <VscSettingsGear/> {sidebarCollapsed ? "" : "設定"}
-          </div>
+        <div className="sidebar_footer" style={{ borderTop: '1px solid #ccc', marginTop: 'auto' }}>
+          <Sidebar collapsed={sidebarCollapsed}>
+            <Menu>
+              <MenuItem><VscSettingsGear/> {sidebarCollapsed ? "" : "設定"}</MenuItem>
+            </Menu>
+          </Sidebar>
         </div>
       </div>
       {/* メインコンテンツ */}
