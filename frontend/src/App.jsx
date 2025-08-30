@@ -55,13 +55,15 @@ function App() {
   return (
     <div className="App" style={{ display: 'flex', height: '100vh' }}>
 
+      {/* サイドバー */}
       <div className="sidebar" style={{display: 'flex', flexDirection: 'column', height: '100%'}}>
+        {/* TODO:ホバー時、背景色を変える */}
         <div className='sidebar_header' style={{ padding: '10px', borderBottom: '1px solid #ccc' }}>
-          <button onClick={toggleSidebar}>
-            {sidebarCollapsed ? <TfiMenu/> : <TfiClose/> }
-          </button>
+          <div className='sidebar_toggle' onClick={toggleSidebar} style={{width: '100%', padding: '10px', textAlign: 'left', fontSize: '16px', cursor: 'pointer' }}>
+            {sidebarCollapsed ? <TfiMenu/> : <><TfiClose/> mAst</> }
+          </div>
         </div>
-        <div className="sidebar_main" style={{ flex: 1, overflowY: 'auto' }}>
+        <div className="sidebar_body" style={{ flex: 1, overflowY: 'auto' }}>
           <Sidebar collapsed={sidebarCollapsed}>
             <Menu>
               <MenuItem><FaSearch /> {sidebarCollapsed ? "" : "検索・一覧"}</MenuItem>
@@ -69,12 +71,14 @@ function App() {
             </Menu>
           </Sidebar>
         </div>
+        {/* TODO:ホバー時、背景色を変える */}
         <div className="sidebar_footer" style={{ padding: '10px', borderTop: '1px solid #ccc', marginTop: 'auto' }}>
-          <button >
+          <div style={{width: '100%', padding: '10px', fontSize: '16px', textAlign: 'left', cursor: 'pointer' }}>
             <VscSettingsGear/> {sidebarCollapsed ? "" : "設定"}
-          </button>
+          </div>
         </div>
       </div>
+      {/* メインコンテンツ */}
       <main>
         <h1>Docker Compose 連携確認アプリ</h1>
         <p>このページはNginxによって提供されています。</p>
