@@ -57,29 +57,20 @@ function App() {
 
       {/* サイドバー */}
       <div className="sidebar" style={{display: 'flex', padding: '10px', flexDirection: 'column', height: '100%'}}>
-        <div className='sidebar_header' style={{ borderBottom: '1px solid #ccc' }}>
-          <Sidebar collapsed={sidebarCollapsed}>
-            <Menu>
+        <Sidebar collapsed={sidebarCollapsed} >
+            <Menu className='sidebar_header' style={{ borderBottom: '1px solid #ccc' }}>
               <MenuItem onClick={toggleSidebar}>{sidebarCollapsed ? <TfiMenu/> : <><TfiClose/> mAst</> }</MenuItem>
             </Menu>
-          </Sidebar>
-        </div>
-        <div className="sidebar_body">
-          <Sidebar collapsed={sidebarCollapsed}>
-            <Menu>
+            <Menu className="sidebar_body" collapsed={sidebarCollapsed}>
               <MenuItem><FaSearch /> {sidebarCollapsed ? "" : "検索・一覧"}</MenuItem>
               <MenuItem><FaPencilAlt /> {sidebarCollapsed ? "" : "追加・編集"}</MenuItem>
             </Menu>
-          </Sidebar>
-        </div>
-        {/* TODO:ホバー時、背景色を変える */}
-        <div className="sidebar_footer" style={{ borderTop: '1px solid #ccc', marginTop: 'auto' }}>
-          <Sidebar collapsed={sidebarCollapsed}>
-            <Menu>
-              <MenuItem><VscSettingsGear/> {sidebarCollapsed ? "" : "設定"}</MenuItem>
-            </Menu>
-          </Sidebar>
-        </div>
+        </Sidebar>
+        <Sidebar collapsed={sidebarCollapsed} style={{ borderTop: '1px solid #ccc', marginTop: 'auto' }} >
+          <Menu className="sidebar_footer" >
+            <MenuItem><VscSettingsGear/> {sidebarCollapsed ? "" : "設定"}</MenuItem>
+          </Menu>
+        </Sidebar>
       </div>
       {/* メインコンテンツ */}
       <main>
