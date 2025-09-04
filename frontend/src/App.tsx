@@ -1,6 +1,7 @@
-import { BrowserRouter as Router, Route, Routes } from 'react-router'
-import SideMenu from './components/SideMenu.tsx';
-import { RouteComponent } from './Route.tsx';
+import React from 'react'
+import { BrowserRouter as Router } from 'react-router-dom'
+import SideMenu from './components/SideMenu';
+import { RouteComponent } from './Route';
 
 function App() {
   return (
