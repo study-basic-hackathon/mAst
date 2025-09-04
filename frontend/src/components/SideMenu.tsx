@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 import { FaSearch, FaPencilAlt } from 'react-icons/fa';
 import { VscSettingsGear } from 'react-icons/vsc';
 import { TfiMenu, TfiClose } from 'react-icons/tfi';
 import {Sidebar, Menu, MenuItem, SubMenu} from 'react-pro-sidebar';
-import { GetLink } from '../Route.tsx'
+import { GetLink } from '../Route'
 
-const MenuItemList = {
+const MenuItemList: any = {
     header: [
     ],
     body: [
@@ -20,7 +20,7 @@ const MenuItemList = {
 
 const BuildMenuItems = (layout: string) => {
     return (
-        MenuItemList[layout].map((item, index) => (
+        MenuItemList[layout].map((item : any, index: number) => (
             <MenuItem icon={item.icon} key={index} component={<Link to={GetLink(item.key)} />} >
                 {item.label}
             </MenuItem>

@@ -17,7 +17,7 @@ const Home: React.FC = () => {
         }
         const data = await response.json()
         setMessage(data.message)
-        } catch (err) {
+        } catch (err: Error | any) {
         setError(err.message)
         } finally {
         setLoading(false)
@@ -35,7 +35,7 @@ const Home: React.FC = () => {
         }
         const data = await response.json()
         setDbMessage(data.db_message)
-        } catch (err) {
+        } catch (err: Error | any) {
         setError(err.message)
         } finally {
         setLoading(false)
