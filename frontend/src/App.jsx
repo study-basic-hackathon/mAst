@@ -28,7 +28,7 @@ function App() {
         <SideMenu />
       </div>
       {/* メインコンテンツ */}
-      <main>
+      <main style={{margin: '10px'}}>
         {BuildRouter()}
       </main>
     </div>
