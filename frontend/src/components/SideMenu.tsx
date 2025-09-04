@@ -27,7 +27,7 @@ const BuildMenuItems = (layout: string) => {
 }
 
 const SideMenu: React.FC = () => {
-    const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+    const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
 
     const toggleSidebar = () => {
         setSidebarCollapsed(!sidebarCollapsed);
