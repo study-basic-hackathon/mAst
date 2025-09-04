@@ -7,7 +7,7 @@ function App() {
       <div className="App" style={{ display: 'flex', height: '100vh' }}>
         <Router>
             {/* サイドバー */}
-            <div className="sidebar" style={{display: 'flex', padding: '10px', flexDirection: 'column', height: '100%'}}>
+            <div className="sidebar" style={{display: 'flex', flexDirection: 'column', height: '100%'}}>
               <SideMenu />
             </div>
             {/* メインコンテンツ */}
