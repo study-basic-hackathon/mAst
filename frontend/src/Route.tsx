@@ -1,6 +1,6 @@
 import React from 'react'
 import {Route, Routes} from 'react-router'
-import Home from './pages/Home.tsx';
+import Home from './pages/Home';
 
 const RouteConf = {
     home:     { path: '/'        , element: <Home />                 },
