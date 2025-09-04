@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 import { FaSearch, FaPencilAlt } from 'react-icons/fa';
 import { VscSettingsGear } from 'react-icons/vsc';
 import { TfiMenu, TfiClose } from 'react-icons/tfi';
