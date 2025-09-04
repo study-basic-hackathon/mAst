@@ -1,25 +1,27 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router';
 import { FaSearch, FaPencilAlt } from 'react-icons/fa';
 import { VscSettingsGear } from 'react-icons/vsc';
 import { TfiMenu, TfiClose } from 'react-icons/tfi';
 import {Sidebar, Menu, MenuItem, SubMenu} from 'react-pro-sidebar';
+import { GetLink } from '../Route.tsx'
 
 const MenuItemList = {
     header: [
     ],
     body: [
-        { icon: <FaSearch />, label: "検索・一覧"},
-        { icon: <FaPencilAlt />, label: "追加・編集"},
+        { key: "search"   , icon: <FaSearch />   , label: "検索・一覧" },
+        { key: "edit"     , icon: <FaPencilAlt />, label: "追加・編集" },
     ],
     footer: [
-        { icon: <VscSettingsGear/>, label: "設定"}
+        { key: "settings" ,icon: <VscSettingsGear />, label: "設定" },
     ]
 }
 
 const BuildMenuItems = (layout: string) => {
     return (
         MenuItemList[layout].map((item, index) => (
-            <MenuItem icon={item.icon} key={index}>
+            <MenuItem icon={item.icon} key={index} component={<Link to={GetLink(item.key)} />} >
                 {item.label}
             </MenuItem>
         ))
@@ -35,6 +37,7 @@ const SideMenu: React.FC = () => {
 
     return (
         <>
+            
             <Sidebar collapsed={sidebarCollapsed}>
                 <Menu className="sidebar_header" style={{ borderBottom: '1px solid #ccc', marginTop: 5}}>
                     <MenuItem onClick={toggleSidebar} icon={sidebarCollapsed ? <TfiMenu/> : <TfiClose/>}>mAst</MenuItem>
