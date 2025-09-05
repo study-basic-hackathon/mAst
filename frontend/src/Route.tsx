@@ -1,10 +1,11 @@
 import React from 'react'
 import {Route, Routes} from 'react-router'
-import Home from './pages/Home.tsx';
+import Home from './pages/Home';
+import Search from './pages/Search';
 
 const RouteConf = {
     home:     { path: '/'        , element: <Home />                 },
-    search:   { path: '/Search'  , element: <div>Search Page</div>   },
+    search:   { path: '/Search'  , element: <Search />                 },
     edit:     { path: '/Edit'    , element: <div>Edit Page</div>     },
     settings: { path: '/Settings', element: <div>Settings Page</div> },
 };
