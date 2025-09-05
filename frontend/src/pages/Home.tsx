@@ -11,16 +11,16 @@ const Home: React.FC = () => {
         setLoading(true)
         setError(null)
         try {
-            const response = await fetch('/api')
-            if (!response.ok) {
-                throw new Error('APIから応答がありませんでした')
-            }
-            const data = await response.json()
-            setMessage(data.message)
-        } catch (err: unknown) {
-            setError(err instanceof Error ? err.message : String(err))
+          const response = await fetch('/api')
+          if (!response.ok) {
+              throw new Error('APIから応答がありませんでした')
+          }
+          const data = await response.json()
+          setMessage(data.message)
+        } catch (err: Error | any) {
+          setError(err.message)
         } finally {
-            setLoading(false)
+          setLoading(false)
         }
     }
 
