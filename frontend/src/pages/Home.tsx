@@ -45,7 +45,7 @@ const Home: React.FC = () => {
     return (
     <>
         <h1>mAst</h1>
-        <p>電子部品の在庫を見える化します</p>
+        <p>電子部品の在庫を見える化</p>
         
         <div style={{ marginBottom: '20px' }}>
             <h2>バックエンド通信テスト (FastAPI)</h2>
