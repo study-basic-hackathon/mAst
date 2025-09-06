@@ -5,14 +5,12 @@ import { RouteComponent } from './Route';
 
 function App() {
   return (
-      <div className="App" style={{ display: 'flex', height: '100vh' }}>
+      <div className="App" style={{ display: 'flex', height: '100vh', width: '100vw' }}>
         <Router>
             {/* サイドバー */}
-            <div className="sidebar" style={{display: 'flex', flexDirection: 'column', height: '100%'}}>
               <SideMenu />
-            </div>
             {/* メインコンテンツ */}
-            <main style={{margin: '10px'}}>
+            <main style={{ width:'100%', margin: '10px'}}>
               <RouteComponent/>
             </main>
         </Router>

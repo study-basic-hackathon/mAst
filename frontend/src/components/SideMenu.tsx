@@ -36,23 +36,22 @@ const SideMenu: React.FC = () => {
     };
 
     return (
-        <>
-            
+        <div className="sidebar" style={{height: '100%', display: 'flex', flexDirection: 'column'}}>
             <Sidebar collapsed={sidebarCollapsed}>
-                <Menu className="sidebar_header" style={{ borderBottom: '1px solid #ccc', marginTop: 5}}>
+                <Menu className="header" style={{ borderBottom: '1px solid #ccc', marginTop: 5}}>
                     <MenuItem onClick={toggleSidebar} icon={sidebarCollapsed ? <TfiMenu/> : <TfiClose/>}>mAst</MenuItem>
                     {BuildMenuItems("header")}
                 </Menu>
-                <Menu className="sidebar_body">
+                <Menu className="body">
                     {BuildMenuItems("body")}
                 </Menu>
             </Sidebar>
             <Sidebar collapsed={sidebarCollapsed} style={{ borderTop: '1px solid #ccc', bottom: '0%', marginTop: 'auto', marginBottom: 10 }}>
-                <Menu className="sidebar_footer">
+                <Menu className="footer">
                     {BuildMenuItems("footer")}
                 </Menu>
             </Sidebar>
-        </>
+        </div>
     );
 }
 export default SideMenu;
