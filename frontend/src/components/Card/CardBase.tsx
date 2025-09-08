@@ -37,7 +37,7 @@ const CardBase : React.FC<CardBaseProps & NeedChildren> = ({title='', category='
         <div style={{display:'flex', width: '100%', height:'90px', marginBottom:'10px'}}>
             <div className='cardWrapper' style={{display:'flex', overflow: 'hidden', width: '100%', height:'100%', margin:'5px', borderRadius:'5px', border:'1px solid', borderColor: 'gray'}}>
                 <div className='cardImage' style={{justifyContent:'center', alignItems:'center', height:'100%', aspectRatio:'1/1'}}>
-                    { validUrl(imageUrl) ? <img src={imageUrl} onError={() => handleError()}></img> : <ErrorImage /> }
+                    { validUrl(imageUrl) ? <img src={imageUrl} onError={() => handleError()} style={{height:'auto', maxWidth:'100%'}}></img> : <ErrorImage /> }
                 </div>
 
                 <div className='cardText' style={{flexGrow:1, display:'flex', flexDirection:'column', justifyContent:'center', padding:'5px 10px'}}>
