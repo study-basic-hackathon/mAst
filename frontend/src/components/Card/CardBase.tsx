@@ -8,11 +8,11 @@ export interface CardBaseProps {
 };
 
 {/* ベースのコンポーネントには子コンポーネントの実装を強制する */}
-interface NeedChildren {
+interface NeedContentChildren {
   children: React.ReactNode;
 };
 
-const CardBase : React.FC<CardBaseProps & NeedChildren> = ({title='', category='', imageUrl='', children}) => {
+const CardBase : React.FC<CardBaseProps & NeedContentChildren> = ({title='', category='', imageUrl='', children}) => {
     const [hasError, setHasError] = useState(false);
 
     const handleError = () => {
