@@ -1,4 +1,3 @@
-/// <reference types="vitest" />
 import { defineConfig, mergeConfig } from 'vitest/config';
 import viteConfig from './vite.config';
 import react from '@vitejs/plugin-react';

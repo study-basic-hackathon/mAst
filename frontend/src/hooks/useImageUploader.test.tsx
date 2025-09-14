@@ -1,40 +1,52 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, fireEvent } from '@testing-library/react';
-import { renderHook, act } from '@testing-library/react';
+import { render, fireEvent, screen } from '@testing-library/react';
 import { useImageUploader } from './useImageUploader';
 import React from 'react';
+
+// フックをテストするためのヘルパーコンポーネント
+const TestHarness = ({ onFileSelect }: { onFileSelect: (file: File) => void }) => {
+  const { UploaderInputComponent, triggerFileDialog } = useImageUploader(onFileSelect);
+  return (
+    <div>
+      <UploaderInputComponent />
+      <button data-testid="trigger" onClick={triggerFileDialog}>Trigger</button>
+    </div>
+  );
+};
 
 describe('useImageUploader フック', () => {
   it('triggerFileDialogがinputのclickイベントを発火させるべき', () => {
     const mockOnFileSelect = vi.fn();
-    const { result } = renderHook(() => useImageUploader(mockOnFileSelect));
+    render(<TestHarness onFileSelect={mockOnFileSelect} />);
     
-    // UploaderInputComponentをレンダリングして、refをフックに接続する
-    const { container } = render(<result.current.UploaderInputComponent />);
-    const inputElement = container.querySelector('input');
+    // DOMからinput要素を取得
+    const inputElement = document.querySelector('input[type="file"]');
+    expect(inputElement).not.toBeNull();
+
+    // clickメソッドをスパイ
+    const clickSpy = vi.spyOn(inputElement as HTMLElement, 'click');
     
-    const clickSpy = vi.spyOn(inputElement!, 'click');
+    // トリガーボタンをクリック
+    const triggerButton = screen.getByTestId('trigger');
+    fireEvent.click(triggerButton);
     
-    act(() => {
-      result.current.triggerFileDialog();
-    });
-    
+    // clickが呼ばれたことを確認
     expect(clickSpy).toHaveBeenCalledTimes(1);
   });
 
   it('ファイル選択時にonFileSelectコールバックが呼び出されるべき', () => {
     const mockOnFileSelect = vi.fn();
-    const { result } = renderHook(() => useImageUploader(mockOnFileSelect));
+    render(<TestHarness onFileSelect={mockOnFileSelect} />);
     
-    const { container } = render(<result.current.UploaderInputComponent />);
-    const inputElement = container.querySelector('input');
+    const inputElement = document.querySelector('input[type="file"]');
+    expect(inputElement).not.toBeNull();
 
     const mockFile = new File(['dummy content'], 'test.png', { type: 'image/png' });
 
-    act(() => {
-      fireEvent.change(inputElement!, { target: { files: [mockFile] } });
-    });
+    // ファイル選択イベントを発火
+    fireEvent.change(inputElement!, { target: { files: [mockFile] } });
 
+    // コールバックが正しい引数で呼ばれたことを確認
     expect(mockOnFileSelect).toHaveBeenCalledTimes(1);
     expect(mockOnFileSelect).toHaveBeenCalledWith(mockFile);
   });

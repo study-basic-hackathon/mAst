@@ -8,6 +8,7 @@ services:
     volumes:
       # ホストのコードをコンテナにマウント（開発用）
       - ./frontend:/app
+      - /app/node_modules
     command: npm run test
 
   # FastAPIバックエンドテストサービス

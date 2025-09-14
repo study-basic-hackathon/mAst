@@ -9,6 +9,7 @@ services:
     volumes:
       # ホストのコードをコンテナにマウント（開発用）
       - ./frontend:/app
+      - /app/node_modules
     # ビルド後の成果物をvolumesとして定義
     expose:
       - "5173"

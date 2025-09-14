@@ -1,7 +1,7 @@
 # フロントエンド（React）コンテナの本番用Docker設定
 
 # --- ビルドステージ ---
-FROM node:18-alpine AS build
+FROM node:current-alpine3.22 AS build
 
 # 作業ディレクトリを設定
 WORKDIR /app

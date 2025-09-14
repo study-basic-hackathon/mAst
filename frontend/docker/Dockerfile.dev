@@ -1,7 +1,7 @@
 # フロントエンド（React）コンテナの開発用Docker設定
 
 # ベースイメージとしてNode.jsを使用
-FROM node:18-alpine
+FROM node:current-alpine3.22
 
 # 作業ディレクトリを設定
 WORKDIR /app
