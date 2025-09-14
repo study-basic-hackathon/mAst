@@ -1,6 +1,7 @@
 import os
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
+from typing import List
 from dotenv import load_dotenv
 import mysql.connector
 
@@ -32,6 +33,40 @@ def get_db_connection():
 # リクエストボディの型を定義
 class InventoryUpdate(BaseModel):
     quantity: int
+
+class BatchInventoryUpdateItem(BaseModel):
+    id: int
+    quantity: int
+
+# 在庫一括更新エンドポイント
+@app.put("/inventory/batch")
+def update_batch_inventory(items: List[BatchInventoryUpdateItem]):
+    conn = get_db_connection()
+    if conn is None:
+        raise HTTPException(status_code=500, detail="Database connection failed")
+
+    try:
+        cursor = conn.cursor()
+        conn.start_transaction()
+        
+        update_query = "UPDATE Inventory SET quantity = %s WHERE id = %s"
+        
+        for item in items:
+            if item.quantity < 0:
+                raise HTTPException(status_code=400, detail=f"Quantity for item {item.id} cannot be negative")
+            cursor.execute(update_query, (item.quantity, item.id))
+        
+        conn.commit()
+        return {"message": "Inventory updated successfully"}
+    except mysql.connector.Error as e:
+        conn.rollback()
+        raise HTTPException(status_code=500, detail=f"Database query error: {e}")
+    except HTTPException as e:
+        conn.rollback()
+        raise e
+    finally:
+        cursor.close()
+        conn.close()
 
 # 在庫更新エンドポイント
 @app.put("/inventory/{inventory_id}")
@@ -75,6 +110,7 @@ def get_parts_data():
         query = """
             SELECT
                 p.id,
+                i.id as inventoryId,
                 p.p_name AS title,
                 c.name AS category,
                 i.quantity

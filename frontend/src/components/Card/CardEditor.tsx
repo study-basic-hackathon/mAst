@@ -129,18 +129,26 @@ const ItemEditor: React.FC<ItemEditorProps> = ({ quantity, initialQuantity, onQu
 
 interface CardEditorProps extends CardBaseProps {
   quantity: number;
+  initialQuantity: number; // 親から初期値を受け取る
+  onQuantityChange: (newQuantity: number) => void; // 親に数量の変更を通知する
   handleDeleteClick: () => void;
 }
 
-const CardEditor: React.FC<CardEditorProps> = ({ title = '', category = '', imageUrl = '', quantity: init_quantity, handleDeleteClick }) => {
-    const [quantity, setQuantity] = useState(init_quantity);
-
+const CardEditor: React.FC<CardEditorProps> = ({ 
+    title = '', 
+    category = '', 
+    imageUrl = '', 
+    quantity, 
+    initialQuantity,
+    onQuantityChange,
+    handleDeleteClick 
+}) => {
     return (
         <CardBase title={title} category={category} imageUrl={imageUrl}>
             <ItemEditor
                 quantity={quantity}
-                initialQuantity={init_quantity} // 初期値を渡す
-                onQuantityChange={setQuantity}
+                initialQuantity={initialQuantity}
+                onQuantityChange={onQuantityChange}
                 handleDeleteClick={handleDeleteClick}
             />
         </CardBase>
