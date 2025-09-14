@@ -22,7 +22,7 @@ const CardBase : React.FC<CardBaseProps & NeedContentChildren> = ({title='', cat
 
     const ErrorImage = () => {
         return (
-            <div style={{display: 'flex', justifyContent:'center', alignItems:'center', height:'100%', width: '100%', backgroundColor:'#d1d1d1'}}>
+            <div data-testid="error-image" style={{display: 'flex', justifyContent:'center', alignItems:'center', height:'100%', width: '100%', backgroundColor:'#d1d1d1'}}>
                 <FaImage size={'60%'}/>
             </div>
         );
@@ -37,7 +37,7 @@ const CardBase : React.FC<CardBaseProps & NeedContentChildren> = ({title='', cat
     return (
         <div style={{display:'flex', width: '100%', height:'90px', marginBottom:'10px'}}>
             <div className='cardWrapper' style={{display:'flex', overflow: 'hidden', width: '100%', height:'100%', margin:'5px', borderRadius:'5px', border:'1px solid', borderColor: 'gray'}}>
-                <div className='cardImage' style={{justifyContent:'center', alignItems:'center', height:'100%', aspectRatio:'1/1', cursor: onImageClick ? 'pointer' : 'default'}} onClick={onImageClick}>
+                <div data-testid="image-container" className='cardImage' style={{justifyContent:'center', alignItems:'center', height:'100%', aspectRatio:'1/1', cursor: onImageClick ? 'pointer' : 'default'}} onClick={onImageClick}>
                     { validUrl(imageUrl) ? <img src={imageUrl} onError={() => handleError()} style={{height:'auto', maxWidth:'100%'}}></img> : <ErrorImage /> }
                 </div>
 

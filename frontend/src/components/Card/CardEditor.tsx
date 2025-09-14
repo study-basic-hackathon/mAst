@@ -66,9 +66,9 @@ const CustomNumberUpDown: React.FC<CustomNumberUpDownProps> = ({ value, initialV
 
     return (
         <div style={componentStyle}>
-            <button onClick={() => handleValueChange(value - 1)} style={buttonStyle}><FaMinusCircle size='60%' /></button>
+            <button data-testid="minus-button" onClick={() => handleValueChange(value - 1)} style={buttonStyle}><FaMinusCircle size='60%' /></button>
             <input className='quantityText' value={value} onChange={handleChange} type="text" style={inputStyle} />
-            <button onClick={() => handleValueChange(value + 1)} style={buttonStyle}><FaPlusCircle size='60%' /></button>
+            <button data-testid="plus-button" onClick={() => handleValueChange(value + 1)} style={buttonStyle}><FaPlusCircle size='60%' /></button>
         </div>
     );
 };
@@ -98,7 +98,7 @@ interface DeleteButtonProps {
 // DeleteButtonコンポーネント
 const DeleteButton: React.FC<DeleteButtonProps> = ({ handleDeleteClick }) => {
     return (
-        <button style={{ height: '100%', padding: 0, background:'none', border:'none', cursor:'pointer' }} onClick={handleDeleteClick}>
+        <button data-testid="delete-button" style={{ height: '100%', padding: 0, background:'none', border:'none', cursor:'pointer' }} onClick={handleDeleteClick}>
             <FaMinusSquare size={'60%'} color={'#ff6464'} />
         </button>
     );
