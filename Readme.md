@@ -1,18 +1,27 @@
 # mAst
 
-## 最小構成の動作環境構築
+## 開発環境の構築と起動
 
 1. ターミナルを開き、`docker-compose.yml`があるディレクトリに移動
-2. 以下のコマンドを実行
-```
+2. 以下のコマンドを実行して、コンテナをビルド・起動します。
+```bash
 docker compose up --build -d
 ```
 
-reactサーバアクセス：`http://localhost:5173/`
+### アクセス情報
+- Reactフロントエンド: `http://localhost:5173/`
+- FastAPIバックエンド: `http://localhost:8000/`
+- FastAPIからDBへのアクセス例: `http://localhost:8000/db`
+- MySQLサーバー: `localhost:3306` (SQLクライアントからアクセス可能)
 
-fastapiサーバアクセス：`http://localhost:8000/`
+## テストの実行
 
-fastapiサーバからDBにアクセス：`http://localhost:8000/db`
+1. ターミナルを開き、プロジェクトのルートディレクトリに移動
+2. 以下のコマンドを実行して、テスト用のコンテナを起動し、テストを実行します。
+```bash
+docker compose -f docker-compose.test.yml up --build --abort-on-container-exit
+```
+このコマンドは、テストが完了すると自動的にコンテナを停止・削除します。
 
-mysqlサーバ：`localhost:3306`
-※sqlサーバにはsqlクライアントでアクセスできる
+### テスト用データベース
+- MySQLサーバー (テスト用): `localhost:3307`
