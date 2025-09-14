@@ -1,0 +1,49 @@
+import os
+import mysql.connector
+from mysql.connector import pooling
+from dotenv import load_dotenv
+
+load_dotenv()
+
+# データベース接続設定
+DB_HOST = os.getenv("MYSQL_HOST", "db")
+DB_USER = os.getenv("MYSQL_USER", "root")
+DB_PASSWORD = os.getenv("MYSQL_PASSWORD", "mast2509")
+DB_NAME = os.getenv("MYSQL_DATABASE", "mast")
+
+# 接続プールの設定
+db_config = {
+    "host": DB_HOST,
+    "user": DB_USER,
+    "password": DB_PASSWORD,
+    "database": DB_NAME,
+}
+
+try:
+    # 接続プールを作成
+    cnx_pool = mysql.connector.pooling.MySQLConnectionPool(
+        pool_name="mast_pool",
+        pool_size=5,
+        **db_config
+    )
+    print("Database connection pool created successfully.")
+except mysql.connector.Error as e:
+    print(f"Error creating connection pool: {e}")
+    cnx_pool = None
+
+# データベース接続を取得するための依存関係
+def get_db_connection():
+    if cnx_pool is None:
+        raise ConnectionError("Database connection pool is not available.")
+    try:
+        # プールから接続を取得
+        conn = cnx_pool.get_connection()
+        yield conn
+    except mysql.connector.Error as e:
+        print(f"Error getting connection from pool: {e}")
+        yield None
+    finally:
+        # 接続をプールに返す
+        if 'conn' in locals() and conn.is_connected():
+            conn.close()
+            # print("Connection returned to the pool.")
