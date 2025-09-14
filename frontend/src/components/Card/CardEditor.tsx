@@ -50,7 +50,7 @@ const CustomNumberUpDown: React.FC<CustomNumberUpDownProps> = ({ value, initialV
         borderColor: 'gray',
         marginRight: '5px',
         // 値が変更されていたら背景色を変更
-        backgroundColor: hasChanged ? '#fff8e1' : 'transparent',
+        backgroundColor: hasChanged ? '#fff6b6' : 'transparent',
         transition: 'background-color 0.3s',
     };
 
@@ -116,9 +116,7 @@ interface ItemEditorProps {
 const ItemEditor: React.FC<ItemEditorProps> = ({ quantity, initialQuantity, onQuantityChange, handleDeleteClick }) => {
     return (
         <div style={{ height: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'flex-end' }}>
-            <div style={{ alignContent: 'right' }}>
-                <QuantitySelector quantity={quantity} initialQuantity={initialQuantity} onQuantityChange={onQuantityChange} />
-            </div>
+            <QuantitySelector quantity={quantity} initialQuantity={initialQuantity} onQuantityChange={onQuantityChange} />
             <div style={{ width: '50px' }}>
                 <DeleteButton handleDeleteClick={handleDeleteClick} />
             </div>
