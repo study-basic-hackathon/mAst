@@ -1,5 +1,6 @@
 import os
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
 from dotenv import load_dotenv
 import mysql.connector
 
@@ -11,8 +12,8 @@ app = FastAPI()
 # MySQL接続設定
 DB_HOST = os.getenv("MYSQL_HOST", "db")
 DB_USER = os.getenv("MYSQL_USER", "root")
-DB_PASSWORD = os.getenv("MYSQL_PASSWORD", "password")
-DB_NAME = os.getenv("MYSQL_DATABASE", "myappdb")
+DB_PASSWORD = os.getenv("MYSQL_PASSWORD", "mast2509") # docker-compose.ymlで設定したパスワード
+DB_NAME = os.getenv("MYSQL_DATABASE", "mast") # docker-compose.ymlで設定したデータベース名
 
 # データベース接続関数
 def get_db_connection():
@@ -28,28 +29,91 @@ def get_db_connection():
         print(f"Error connecting to MySQL: {e}")
         return None
 
-# ルートエンドポイント
-@app.get("/")
-def read_root():
-    return {"message": "Hello from FastAPI!"}
+# リクエストボディの型を定義
+class InventoryUpdate(BaseModel):
+    quantity: int
 
-# データベース接続確認エンドポイント
-@app.get("/db")
-def get_db_data():
+# 在庫更新エンドポイント
+@app.put("/inventory/{inventory_id}")
+def update_inventory(inventory_id: int, item: InventoryUpdate):
     conn = get_db_connection()
     if conn is None:
-        return {"db_message": "Failed to connect to the database."}
+        raise HTTPException(status_code=500, detail="Database connection failed")
 
     try:
         cursor = conn.cursor()
-        cursor.execute("SELECT message FROM messages WHERE id = 1")
-        result = cursor.fetchone()
-        if result:
-            db_message = result[0]
-            return {"db_message": db_message}
-        else:
-            return {"db_message": "No data found in the database."}
+        # 在庫数量が0未満にならないようにチェック
+        if item.quantity < 0:
+            raise HTTPException(status_code=400, detail="Quantity cannot be negative")
+            
+        # UPDATEクエリの実行
+        query = "UPDATE Inventory SET quantity = %s WHERE id = %s"
+        cursor.execute(query, (item.quantity, inventory_id))
+        
+        # 変更がなかった場合（IDが存在しないなど）
+        if cursor.rowcount == 0:
+            raise HTTPException(status_code=404, detail="Inventory item not found")
+            
+        conn.commit()
+        
+        return {"message": "Inventory updated successfully", "inventory_id": inventory_id, "new_quantity": item.quantity}
     except mysql.connector.Error as e:
-        return {"db_message": f"Database query error: {e}"}
+        conn.rollback()
+        raise HTTPException(status_code=500, detail=f"Database query error: {e}")
     finally:
+        cursor.close()
+        conn.close()
+
+@app.get("/parts")
+def get_parts_data():
+    conn = get_db_connection()
+    if conn is None:
+        raise HTTPException(status_code=500, detail="Database connection failed")
+
+    try:
+        cursor = conn.cursor(dictionary=True)
+        query = """
+            SELECT
+                p.id,
+                p.p_name AS title,
+                c.name AS category,
+                i.quantity
+            FROM Parts p
+            JOIN Inventory i ON p.id = i.parts_id
+            JOIN Category c ON p.c_id = c.id
+        """
+        cursor.execute(query)
+        result = cursor.fetchall()
+        return result
+    except mysql.connector.Error as e:
+        raise HTTPException(status_code=500, detail=f"Database query error: {e}")
+    finally:
+        if conn.is_connected():
+            cursor.close()
+            conn.close()
+
+@app.delete("/parts/{parts_id}")
+def delete_part(parts_id: int):
+    conn = get_db_connection()
+    if conn is None:
+        raise HTTPException(status_code=500, detail="Database connection failed")
+
+    try:
+        cursor = conn.cursor()
+        # DELETEクエリの実行 (Partsテーブルから削除)
+        # ON DELETE CASCADEにより、関連するInventoryレコードも削除される
+        query = "DELETE FROM Parts WHERE id = %s"
+        cursor.execute(query, (parts_id,))
+        
+        if cursor.rowcount == 0:
+            raise HTTPException(status_code=404, detail="Part not found")
+            
+        conn.commit()
+        
+        return {"message": "Part deleted successfully", "parts_id": parts_id}
+    except mysql.connector.Error as e:
+        conn.rollback()
+        raise HTTPException(status_code=500, detail=f"Database query error: {e}")
+    finally:
+        cursor.close()
         conn.close()
