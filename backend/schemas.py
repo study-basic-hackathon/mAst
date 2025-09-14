@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from typing import List
 
 # --- Inventory Schemas ---
@@ -11,12 +11,11 @@ class BatchInventoryUpdateItem(BaseModel):
 
 # --- Parts Schemas ---
 class Part(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     inventoryId: int
     title: str
     category: str
     quantity: int
     imageUrl: str
-
-    class Config:
-        orm_mode = True
