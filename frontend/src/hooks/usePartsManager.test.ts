@@ -1,48 +1,38 @@
 import { renderHook, act } from '@testing-library/react';
 import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
 import { usePartsManager } from './usePartsManager';
+import * as partsApi from '../api/partsApi';
+
+vi.mock('../api/partsApi');
 
 describe('usePartsManager', () => {
   beforeEach(() => {
-    vi.stubGlobal('fetch', vi.fn());
+    vi.mocked(partsApi.fetchParts).mockResolvedValue([]);
   });
+
   afterEach(() => {
     vi.restoreAllMocks();
   });
 
   it('should create a new part successfully', async () => {
-    const mockCreatedPart = { id: 1, inventoryId: 101, title: 'New Part', category: 'Category A', quantity: 10, imageUrl: '' };
+    const mockCreatedPart: partsApi.Part = { id: 1, inventoryId: 101, title: 'New Part', category: 'Category A', quantity: 10, imageUrl: '' };
     
-    // 初回のfetchParts呼び出しをモック
-    vi.mocked(fetch).mockResolvedValueOnce({
-      ok: true,
-      json: async () => [],
-    } as Response);
+    vi.mocked(partsApi.createPart).mockResolvedValue(mockCreatedPart);
+    vi.mocked(partsApi.fetchParts).mockResolvedValueOnce([]).mockResolvedValueOnce([mockCreatedPart]);
 
-    const { result, rerender } = renderHook(() => usePartsManager());
+    const { result } = renderHook(() => usePartsManager());
 
-    // 初回のfetchが完了するのを待つ
     await act(async () => {
       await new Promise(resolve => setTimeout(resolve, 0));
     });
 
-    // 部品作成とそれに続くfetchParts呼び出しをモック
-    vi.mocked(fetch)
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => mockCreatedPart,
-      } as Response)
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => [mockCreatedPart],
-      } as Response);
-
+    const newPartData = { title: 'New Part', categoryId: 1, quantity: 10 };
     await act(async () => {
-      await result.current.handleSaveNewPart({ title: 'New Part', category: 'Category A', quantity: 10 });
+      await result.current.handleSaveNewPart(newPartData);
     });
 
-    rerender();
-
+    expect(partsApi.createPart).toHaveBeenCalledWith(newPartData);
+    expect(partsApi.fetchParts).toHaveBeenCalledTimes(2);
     expect(result.current.parts).toEqual([mockCreatedPart]);
     expect(result.current.error).toBeNull();
   });

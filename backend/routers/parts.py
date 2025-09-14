@@ -1,5 +1,5 @@
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
-from typing import List
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
+from typing import List, Optional
 import mysql.connector
 import shutil
 import os
@@ -34,51 +34,55 @@ def delete_part(parts_id: int, db: mysql.connector.MySQLConnection = Depends(get
     except mysql.connector.Error as e:
         raise HTTPException(status_code=500, detail=f"Database query error: {e}")
 
-class PartCreate(schemas.BaseModel):
-    title: str
-    category_id: int
-    quantity: int
-
 @router.post("", response_model=schemas.Part)
-def create_part(part: PartCreate, db: mysql.connector.MySQLConnection = Depends(get_db_connection)):
+async def create_part(
+    title: str = Form(...),
+    category_id: int = Form(...),
+    quantity: int = Form(...),
+    file: Optional[UploadFile] = File(None),
+    db: mysql.connector.MySQLConnection = Depends(get_db_connection)
+):
     if db is None:
         raise HTTPException(status_code=503, detail="Database connection failed")
+
+    image_url = None
+    file_path = None
+
     try:
-        created_part = crud_parts.create(db, part.title, part.category_id, part.quantity)
+        # 部品情報と在庫情報をデータベースに登録
+        created_part = crud_parts.create(db, title, category_id, quantity)
+        part_id = created_part['id']
+
+        if file:
+            # ファイル名を安全に生成
+            file_extension = os.path.splitext(file.filename)[1]
+            file_name = f"{part_id}{file_extension}"
+            file_path = os.path.join("static", "images", file_name)
+
+            # ファイルを保存
+            with open(file_path, "wb") as buffer:
+                shutil.copyfileobj(file.file, buffer)
+            
+            # 画像URLを生成
+            image_url = f"/static/images/{file_name}"
+            
+            # データベースの画像URLを更新
+            crud_parts.update_image_url(db, part_id, image_url)
+            created_part['imageUrl'] = image_url
+
+        db.commit()
         return created_part
+
     except mysql.connector.Error as e:
-        raise HTTPException(status_code=500, detail=f"Database query error: {e}")
-
-@router.post("/{part_id}/image")
-async def upload_part_image(part_id: int, file: UploadFile = File(...), db: mysql.connector.MySQLConnection = Depends(get_db_connection)):
-    if db is None:
-        raise HTTPException(status_code=503, detail="Database connection failed")
-
-    # ファイル名を安全に生成（例：part_id.jpg）
-    file_extension = os.path.splitext(file.filename)[1]
-    file_name = f"{part_id}{file_extension}"
-    file_path = os.path.join("static", "images", file_name)
-    
-    # ファイルを保存
-    try:
-        with open(file_path, "wb") as buffer:
-            shutil.copyfileobj(file.file, buffer)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Could not save file: {e}")
-    finally:
-        file.file.close()
-
-    # データベースを更新
-    # クライアントがアクセスするためのURLパス（/static/images/1.jpg など）
-    image_url = f"/static/images/{file_name}"
-    try:
-        rowcount = crud_parts.update_image_url(db, part_id, image_url)
-        if rowcount == 0:
-            # 部品が存在しない場合は、アップロードされたファイルを削除
+        db.rollback()
+        if file_path and os.path.exists(file_path):
             os.remove(file_path)
-            raise HTTPException(status_code=404, detail="Part not found")
-        return {"message": "Image uploaded successfully", "imageUrl": image_url}
-    except mysql.connector.Error as e:
-        # DBの更新に失敗した場合は、アップロードされたファイルを削除
-        os.remove(file_path)
         raise HTTPException(status_code=500, detail=f"Database query error: {e}")
+    except Exception as e:
+        db.rollback()
+        if file_path and os.path.exists(file_path):
+            os.remove(file_path)
+        raise HTTPException(status_code=500, detail=f"Could not process file: {e}")
+    finally:
+        if file:
+            file.file.close()

@@ -44,11 +44,11 @@ describe('CardCreator', () => {
     const quantityInput = screen.getByLabelText(/個数/i) as HTMLInputElement;
 
     fireEvent.change(nameInput, { target: { value: 'New Part' } });
-    fireEvent.change(categorySelect, { target: { value: 'Category A' } });
+    fireEvent.change(categorySelect, { target: { value: '1' } }); // Category A's id
     fireEvent.change(quantityInput, { target: { value: '123' } });
 
     expect(nameInput.value).toBe('New Part');
-    expect(categorySelect.value).toBe('Category A');
+    expect(categorySelect.value).toBe('1');
     expect(quantityInput.value).toBe('123');
   });
 

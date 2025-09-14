@@ -46,23 +46,30 @@ def test_delete_part_not_found(client, mock_db_connection):
 def test_create_part_success(client, mock_db_connection):
     # 準備
     mock_cursor = mock_db_connection.cursor.return_value
-    # 1. create_part -> crud_parts.create が呼ばれる
-    # 2. crud_parts.create は inventory と parts を作成し、IDを返す
-    # このテストでは、crud関数が返す完全なPartオブジェクトをモックするのではなく、
-    # APIが正しいデータで呼び出され、成功ステータスを返すことを確認します。
-    # crud.createの戻り値をモックする方がより正確ですが、現在のテスト構造に合わせて調整します。
-    mock_cursor.fetchone.return_value = (1, 'New Category') # (c_id, c_name)
-    mock_cursor.lastrowid = 123 # 新しく作成された部品のID
+    # crud.createの戻り値をモック
+    mock_created_part = {
+        'id': 123,
+        'inventoryId': 201,
+        'title': 'New Part',
+        'category': 'New Category',
+        'quantity': 10,
+        'imageUrl': ''
+    }
+    # crud.parts.create をモックする方がより堅牢ですが、ここではカーソルの振る舞いをモックします
+    mock_cursor.fetchone.return_value = mock_created_part
+    mock_cursor.lastrowid = 123
 
-    new_part_data = {"title": "New Part", "category_id": 1, "quantity": 10}
+    new_part_data = {"title": "New Part", "category_id": "1", "quantity": "10"}
 
     # 実行
-    response = client.post("/parts", json=new_part_data)
+    # APIはフォームデータを期待しているので、json=ではなくdata=を使用
+    response = client.post("/parts", data=new_part_data)
 
     # 検証
     assert response.status_code == 200
     response_data = response.json()
     assert response_data["id"] == 123
     assert response_data["title"] == new_part_data["title"]
-    assert response_data["category"] == "New Category" # IDではなく名前が返されることを期待
-    assert response_data["quantity"] == new_part_data["quantity"]
+    assert response_data["quantity"] == int(new_part_data["quantity"])
+    # crud.createのモックの戻り値に基づいて検証を調整
+    assert response_data["category"] == mock_created_part["category"]
