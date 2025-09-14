@@ -34,6 +34,21 @@ def delete_part(parts_id: int, db: mysql.connector.MySQLConnection = Depends(get
     except mysql.connector.Error as e:
         raise HTTPException(status_code=500, detail=f"Database query error: {e}")
 
+class PartCreate(schemas.BaseModel):
+    title: str
+    category_id: int
+    quantity: int
+
+@router.post("", response_model=schemas.Part)
+def create_part(part: PartCreate, db: mysql.connector.MySQLConnection = Depends(get_db_connection)):
+    if db is None:
+        raise HTTPException(status_code=503, detail="Database connection failed")
+    try:
+        created_part = crud_parts.create(db, part.title, part.category_id, part.quantity)
+        return created_part
+    except mysql.connector.Error as e:
+        raise HTTPException(status_code=500, detail=f"Database query error: {e}")
+
 @router.post("/{part_id}/image")
 async def upload_part_image(part_id: int, file: UploadFile = File(...), db: mysql.connector.MySQLConnection = Depends(get_db_connection)):
     if db is None:
@@ -59,11 +74,11 @@ async def upload_part_image(part_id: int, file: UploadFile = File(...), db: mysq
     try:
         rowcount = crud_parts.update_image_url(db, part_id, image_url)
         if rowcount == 0:
-            # If the part doesn't exist, delete the uploaded file
+            # 部品が存在しない場合は、アップロードされたファイルを削除
             os.remove(file_path)
             raise HTTPException(status_code=404, detail="Part not found")
         return {"message": "Image uploaded successfully", "imageUrl": image_url}
     except mysql.connector.Error as e:
-        # If DB update fails, delete the uploaded file
+        # DBの更新に失敗した場合は、アップロードされたファイルを削除
         os.remove(file_path)
         raise HTTPException(status_code=500, detail=f"Database query error: {e}")

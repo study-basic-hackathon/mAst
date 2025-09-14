@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import CardEditor from '../../Card/CardEditor';
+import CardCreator from './CardCreator';
 import { Part } from '../../../hooks/usePartsManager';
 
 interface PartCardListProps {
@@ -8,11 +9,26 @@ interface PartCardListProps {
   onQuantityChange: (partId: number, newQuantity: number) => void;
   onDeleteClick: (part: Part) => void;
   onImageClick: (partId: number) => void;
+  onSaveNewPart: (newPart: { title: string; category: string; quantity: number; image?: File }) => void;
 }
 
-const PartCardList: React.FC<PartCardListProps> = ({ parts, initialParts, onQuantityChange, onDeleteClick, onImageClick }) => {
+const PartCardList: React.FC<PartCardListProps> = ({ parts, initialParts, onQuantityChange, onDeleteClick, onImageClick, onSaveNewPart }) => {
+  const [isCreating, setIsCreating] = useState(false);
+
+  const handleSave = (newPart: { title: string; category: string; quantity: number; image?: File }) => {
+    onSaveNewPart(newPart);
+    setIsCreating(false);
+  };
+
   return (
     <div className="cardList" style={{ display: 'grid', overflow: 'auto', flexGrow: 1, width: '100%', marginTop: '10px' }}>
+      {!isCreating ? (
+        <div style={{ textAlign: 'center', margin: '10px' }}>
+          <button onClick={() => setIsCreating(true)}>パーツを追加</button>
+        </div>
+      ) : (
+        <CardCreator onSave={handleSave} onCancel={() => setIsCreating(false)} />
+      )}
       {parts.map((part) => {
         const initialPart = initialParts.find(p => p.id === part.id);
         return (

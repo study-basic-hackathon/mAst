@@ -18,6 +18,7 @@ const Edit: React.FC = () => {
     handleCancel,
     handleUpdate,
     handleDelete,
+    handleSaveNewPart,
   } = usePartsManager();
 
   const {
@@ -69,6 +70,7 @@ const Edit: React.FC = () => {
         onQuantityChange={handleQuantityChange}
         onDeleteClick={openModal}
         onImageClick={handleImageClick}
+        onSaveNewPart={handleSaveNewPart}
       />
       
       <EditPageActions

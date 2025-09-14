@@ -125,6 +125,41 @@ export const usePartsManager = () => {
     }
   }, [fetchParts]);
 
+  const handleSaveNewPart = useCallback(async (newPart: { title: string; categoryId: number; quantity: number; image?: File }) => {
+    setError(null);
+    try {
+      const response = await fetch('/api/parts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: newPart.title,
+          category_id: newPart.categoryId,
+          quantity: newPart.quantity,
+        }),
+      });
+      if (!response.ok) {
+        throw new Error('部品の作成に失敗しました。');
+      }
+      const createdPart = await response.json();
+
+      if (newPart.image) {
+        const formData = new FormData();
+        formData.append("file", newPart.image);
+        const imageResponse = await fetch(`/api/parts/${createdPart.id}/image`, {
+          method: 'POST',
+          body: formData,
+        });
+        if (!imageResponse.ok) {
+          throw new Error('画像のアップロードに失敗しました。');
+        }
+      }
+      await fetchParts();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '不明なエラーが発生しました。');
+    }
+  }, [fetchParts]);
+
+
   const hasChanges = useMemo(() => {
     // 数量または画像の変更があったかどうかを判定
     const quantityChanged = JSON.stringify(initialParts.map(p => ({id: p.id, quantity: p.quantity}))) !== JSON.stringify(parts.map(p => ({id: p.id, quantity: p.quantity})));
@@ -143,5 +178,6 @@ export const usePartsManager = () => {
     handleCancel,
     handleUpdate,
     handleDelete,
+    handleSaveNewPart,
   };
 };
