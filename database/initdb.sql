@@ -26,6 +26,7 @@ CREATE TABLE Parts (
     c_id BIGINT NOT NULL COMMENT 'カテゴリーID',
     p_num BIGINT NOT NULL UNIQUE COMMENT '型番',
     p_name VARCHAR(255) NOT NULL COMMENT '部品名',
+    image_url VARCHAR(255) COMMENT '画像URL',
     FOREIGN KEY (c_id) REFERENCES Category(id) ON DELETE RESTRICT ON UPDATE CASCADE
 ) COMMENT = '部品マスタテーブル';
 
