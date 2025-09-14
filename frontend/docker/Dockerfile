@@ -1,7 +1,7 @@
-# フロントエンド（React）コンテナのDocker設定
+# フロントエンド（React）コンテナの本番用Docker設定
 
-# ベースイメージとしてNode.jsを使用
-FROM node:18-alpine
+# --- ビルドステージ ---
+FROM node:18-alpine AS build
 
 # 作業ディレクトリを設定
 WORKDIR /app
@@ -15,8 +15,17 @@ RUN npm install
 # アプリケーションのソースコードをコピー
 COPY . .
 
-# ビルドコマンド
+# アプリケーションをビルド
 RUN npm run build
 
-# アプリケーションの起動コマンド
-CMD ["npm", "run", "dev"]
+# --- プロダクションステージ ---
+FROM nginx:stable-alpine
+
+# ビルドステージからビルド成果物をコピー
+COPY --from=build /app/dist /usr/share/nginx/html
+
+# Nginxのデフォルトポートを公開
+EXPOSE 80
+
+# Nginxをフォアグラウンドで実行
+CMD ["nginx", "-g", "daemon off;"]

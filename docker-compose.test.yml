@@ -4,11 +4,10 @@ services:
     container_name: react_frontend_test
     build:
       context: ./frontend
-      dockerfile: ./docker/Dockerfile
+      dockerfile: ./docker/Dockerfile.dev
     volumes:
       # ホストのコードをコンテナにマウント（開発用）
       - ./frontend:/app
-      - /app/node_modules
     command: npm run test
 
   # FastAPIバックエンドテストサービス
@@ -16,27 +15,8 @@ services:
     container_name: fastapi_backend_test
     build:
       context: ./backend
-      dockerfile: ./docker/Dockerfile
+      dockerfile: ./docker/Dockerfile.dev
     volumes:
       # ホストのコードをコンテナにマウント
       - ./backend:/app
     command: pytest
-    depends_on:
-      - db-test
-
-  # MySQLテストデータベースサービス
-  db-test:
-    container_name: mysql_db_test
-    image: mysql:8.0
-    restart: always
-    environment:
-      # MySQLのrootパスワードを設定
-      MYSQL_ROOT_PASSWORD: mast2509
-      # デフォルトデータベースを設定
-      MYSQL_DATABASE: mast_test
-    ports:
-      # 開発用DBとポートを分ける
-      - "3307:3306"
-    volumes:
-      # 起動時に実行される初期化SQLスクリプトをマウント
-      - ./database/initdb.sql:/docker-entrypoint-initdb.d/initdb.sql
