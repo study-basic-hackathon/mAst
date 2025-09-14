@@ -7,9 +7,10 @@ interface PartCardListProps {
   initialParts: Part[];
   onQuantityChange: (partId: number, newQuantity: number) => void;
   onDeleteClick: (part: Part) => void;
+  onImageClick: (partId: number) => void;
 }
 
-const PartCardList: React.FC<PartCardListProps> = ({ parts, initialParts, onQuantityChange, onDeleteClick }) => {
+const PartCardList: React.FC<PartCardListProps> = ({ parts, initialParts, onQuantityChange, onDeleteClick, onImageClick }) => {
   return (
     <div className="cardList" style={{ display: 'grid', overflow: 'auto', flexGrow: 1, width: '100%', marginTop: '10px' }}>
       {parts.map((part) => {
@@ -21,8 +22,10 @@ const PartCardList: React.FC<PartCardListProps> = ({ parts, initialParts, onQuan
             category={part.category}
             quantity={part.quantity}
             initialQuantity={initialPart ? initialPart.quantity : 0}
+            imageUrl={part.imageUrl}
             onQuantityChange={(newQuantity) => onQuantityChange(part.id, newQuantity)}
             handleDeleteClick={() => onDeleteClick(part)}
+            onImageClick={() => onImageClick(part.id)}
           />
         );
       })}

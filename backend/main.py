@@ -3,7 +3,7 @@ from routers import inventory, parts
 
 app = FastAPI()
 
-# Include routers
+# ルーターを登録
 app.include_router(inventory.router)
 app.include_router(parts.router)
 
@@ -11,6 +11,4 @@ app.include_router(parts.router)
 def read_root():
     return {"message": "Hello from FastAPI!"}
 
-# Note: The database connection test endpoint ('/db') is removed 
-# as the dependency injection system now handles connection checks implicitly.
-# If a connection fails, the relevant endpoint will return a 503 error.
+# 接続に失敗した場合、関連するエンドポイントは503エラーを返します。

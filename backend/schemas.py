@@ -16,6 +16,7 @@ class Part(BaseModel):
     title: str
     category: str
     quantity: int
+    imageUrl: str
 
     class Config:
         orm_mode = True

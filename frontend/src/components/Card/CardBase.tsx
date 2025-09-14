@@ -5,6 +5,7 @@ export interface CardBaseProps {
   title: string;
   category: string;
   imageUrl?: string;
+  onImageClick?: () => void;
 };
 
 {/* ベースのコンポーネントには子コンポーネントの実装を強制する */}
@@ -12,7 +13,7 @@ interface NeedContentChildren {
   children: React.ReactNode;
 };
 
-const CardBase : React.FC<CardBaseProps & NeedContentChildren> = ({title='', category='', imageUrl='', children}) => {
+const CardBase : React.FC<CardBaseProps & NeedContentChildren> = ({title='', category='', imageUrl='', onImageClick, children}) => {
     const [hasError, setHasError] = useState(false);
 
     const handleError = () => {
@@ -36,7 +37,7 @@ const CardBase : React.FC<CardBaseProps & NeedContentChildren> = ({title='', cat
     return (
         <div style={{display:'flex', width: '100%', height:'90px', marginBottom:'10px'}}>
             <div className='cardWrapper' style={{display:'flex', overflow: 'hidden', width: '100%', height:'100%', margin:'5px', borderRadius:'5px', border:'1px solid', borderColor: 'gray'}}>
-                <div className='cardImage' style={{justifyContent:'center', alignItems:'center', height:'100%', aspectRatio:'1/1'}}>
+                <div className='cardImage' style={{justifyContent:'center', alignItems:'center', height:'100%', aspectRatio:'1/1', cursor: onImageClick ? 'pointer' : 'default'}} onClick={onImageClick}>
                     { validUrl(imageUrl) ? <img src={imageUrl} onError={() => handleError()} style={{height:'auto', maxWidth:'100%'}}></img> : <ErrorImage /> }
                 </div>
 

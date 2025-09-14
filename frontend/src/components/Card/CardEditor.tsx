@@ -132,6 +132,7 @@ interface CardEditorProps extends CardBaseProps {
   initialQuantity: number; // 親から初期値を受け取る
   onQuantityChange: (newQuantity: number) => void; // 親に数量の変更を通知する
   handleDeleteClick: () => void;
+  onImageClick?: () => void;
 }
 
 const CardEditor: React.FC<CardEditorProps> = ({ 
@@ -141,10 +142,11 @@ const CardEditor: React.FC<CardEditorProps> = ({
     quantity, 
     initialQuantity,
     onQuantityChange,
-    handleDeleteClick 
+    handleDeleteClick,
+    onImageClick
 }) => {
     return (
-        <CardBase title={title} category={category} imageUrl={imageUrl}>
+        <CardBase title={title} category={category} imageUrl={imageUrl} onImageClick={onImageClick}>
             <ItemEditor
                 quantity={quantity}
                 initialQuantity={initialQuantity}

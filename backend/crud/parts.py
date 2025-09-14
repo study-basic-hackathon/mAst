@@ -7,7 +7,8 @@ def get_all(db: mysql.connector.MySQLConnection):
             i.id as inventoryId,
             p.p_name AS title,
             c.name AS category,
-            i.quantity
+            i.quantity,
+            '' AS imageUrl 
         FROM Parts p
         JOIN Inventory i ON p.id = i.parts_id
         JOIN Category c ON p.c_id = c.id

@@ -6,6 +6,7 @@ export interface Part {
   title: string;
   category: string;
   quantity: number;
+  imageUrl: string;
 }
 
 export const usePartsManager = () => {
@@ -39,6 +40,12 @@ export const usePartsManager = () => {
     );
   }, []);
 
+  const handleImageChange = useCallback((partId: number, newImageUrl: string) => {
+    setParts(currentParts =>
+      currentParts.map(p => (p.id === partId ? { ...p, imageUrl: newImageUrl } : p))
+    );
+  }, []);
+
   const handleCancel = useCallback(() => {
     setParts(JSON.parse(JSON.stringify(initialParts)));
   }, [initialParts]);
@@ -65,10 +72,10 @@ export const usePartsManager = () => {
       if (!response.ok) {
         throw new Error('在庫の更新に失敗しました。');
       }
-      await fetchParts(); // 更新成功後にデータを再取得
+      await fetchParts(); // 更新成功後にデータを再取得して初期状態を更新
     } catch (err) {
       setError(err instanceof Error ? err.message : '不明なエラーが発生しました。');
-      handleCancel(); // エラー時は変更を元に戻す
+      handleCancel(); // エラー発生時は変更をキャンセルして元の状態に戻す
     } finally {
       setIsUpdating(false);
     }
@@ -83,7 +90,7 @@ export const usePartsManager = () => {
         if (!response.ok) {
             throw new Error('部品の削除に失敗しました。');
         }
-        await fetchParts(); // 削除成功後にデータを再取得
+        await fetchParts(); // 削除成功後にデータを再取得してリストを更新
     } catch (err) {
         setError(err instanceof Error ? err.message : '不明なエラーが発生しました。');
     }
@@ -100,6 +107,7 @@ export const usePartsManager = () => {
     error,
     hasChanges,
     handleQuantityChange,
+    handleImageChange,
     handleCancel,
     handleUpdate,
     handleDelete,

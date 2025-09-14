@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import ConfirmationModal from '../components/Modal/ConfirmationModal';
 import PartCardList from '../components/page_components/Edit/PartCardList';
 import EditPageActions from '../components/page_components/Edit/EditPageActions';
@@ -13,6 +13,7 @@ const Edit: React.FC = () => {
     error,
     hasChanges,
     handleQuantityChange,
+    handleImageChange,
     handleCancel,
     handleUpdate,
     handleDelete,
@@ -26,12 +27,44 @@ const Edit: React.FC = () => {
     confirm,
   } = useConfirmationModal<Part>();
 
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [selectedPartId, setSelectedPartId] = useState<number | null>(null);
+
+  const handleImageClick = (partId: number) => {
+    setSelectedPartId(partId);
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file && selectedPartId !== null) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const newImageUrl = reader.result as string;
+        handleImageChange(selectedPartId, newImageUrl);
+      };
+      reader.readAsDataURL(file);
+    }
+    // 同じファイルを再度選択できるように、inputの値をリセットします
+    if(fileInputRef.current) {
+        fileInputRef.current.value = '';
+    }
+    setSelectedPartId(null);
+  };
+
   const handleConfirmDelete = () => {
     confirm(part => handleDelete(part.id));
   };
 
   return (
     <div style={{ height: '100%', width: '100%', display: 'flex', flexDirection: 'column' }}>
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleFileChange}
+        style={{ display: 'none' }}
+        accept="image/*"
+      />
       <div className="searchArea" style={{ alignItems: 'flex-start', flexBasis: '30%' }}>
         <div className="searchBox" style={{ height: '100%', width: '100%', backgroundColor: 'violet' }}></div>
       </div>
@@ -43,6 +76,7 @@ const Edit: React.FC = () => {
         initialParts={initialParts}
         onQuantityChange={handleQuantityChange}
         onDeleteClick={openModal}
+        onImageClick={handleImageClick}
       />
       
       <EditPageActions
