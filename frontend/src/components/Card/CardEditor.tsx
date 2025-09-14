@@ -3,17 +3,15 @@ import { CardBase, CardBaseProps } from './CardBase';
 import { FaPlusCircle, FaMinusCircle, FaMinusSquare } from "react-icons/fa";
 import { ActionFunction } from 'react-router-dom';
 
-interface CardEditorProps extends CardBaseProps {
-  quantity: number;
-  handleDeleteClick: ActionFunction;
-};
+// --- 子コンポーネントをCardEditorの外で定義 ---
 
+// CustomNumberUpDownのProps
 interface CustomNumberUpDownProps {
-    value: number; // 内部でstateを持たず、親から受け取る
-    onValueChange: (value: number) => void; // 値を親に通知するための関数
-};
+    value: number;
+    onValueChange: (value: number) => void;
+}
 
-// CustomNumberUpDownはstateを持たず、props経由で値の表示と更新を行う
+// CustomNumberUpDownコンポーネント
 const CustomNumberUpDown: React.FC<CustomNumberUpDownProps> = ({ value, onValueChange }) => {
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         const newValue = e.target.value;
@@ -23,11 +21,7 @@ const CustomNumberUpDown: React.FC<CustomNumberUpDownProps> = ({ value, onValueC
     };
 
     const handleValueChange = (newValue: number) => {
-        if (newValue < 0) {
-            onValueChange(0);
-        } else {
-            onValueChange(newValue);
-        }
+        onValueChange(newValue < 0 ? 0 : newValue);
     };
 
     return (
@@ -39,44 +33,75 @@ const CustomNumberUpDown: React.FC<CustomNumberUpDownProps> = ({ value, onValueC
     );
 };
 
+// QuantitySelectorのProps
+interface QuantitySelectorProps {
+    quantity: number;
+    onQuantityChange: (quantity: number) => void;
+}
+
+// QuantitySelectorコンポーネント
+const QuantitySelector: React.FC<QuantitySelectorProps> = ({ quantity, onQuantityChange }) => {
+    return (
+        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+            <CustomNumberUpDown value={quantity} onValueChange={onQuantityChange} />
+            <p style={{ width: 'auto', fontSize: '25px', fontWeight: 'bold' }}>個</p>
+        </div>
+    );
+};
+
+// DeleteButtonのProps
+interface DeleteButtonProps {
+    handleDeleteClick: () => void;
+}
+
+// DeleteButtonコンポーネント
+const DeleteButton: React.FC<DeleteButtonProps> = ({ handleDeleteClick }) => {
+    return (
+        <button style={{ height: '100%', padding: 0 }} onClick={handleDeleteClick}>
+            <FaMinusSquare size={'60%'} color={'#ff6464'} />
+        </button>
+    );
+};
+
+// ItemEditorのProps
+interface ItemEditorProps {
+    quantity: number;
+    onQuantityChange: (quantity: number) => void;
+    handleDeleteClick: () => void;
+}
+
+// ItemEditorコンポーネント
+const ItemEditor: React.FC<ItemEditorProps> = ({ quantity, onQuantityChange, handleDeleteClick }) => {
+    return (
+        <div style={{ height: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'flex-end' }}>
+            <div style={{ alignContent: 'right' }}>
+                <QuantitySelector quantity={quantity} onQuantityChange={onQuantityChange} />
+            </div>
+            <div style={{ width: '50px' }}>
+                <DeleteButton handleDeleteClick={handleDeleteClick} />
+            </div>
+        </div>
+    );
+};
+
+
+// --- CardEditor ---
+
+interface CardEditorProps extends CardBaseProps {
+  quantity: number;
+  handleDeleteClick: () => void;
+}
+
 const CardEditor: React.FC<CardEditorProps> = ({ title = '', category = '', imageUrl = '', quantity: init_quantity, handleDeleteClick }) => {
-    // CardEditorで数量(quantity)の状態を管理する
     const [quantity, setQuantity] = useState(init_quantity);
 
-    const QuantitySelector = () => {
-        return (
-            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                {/* CustomNumberUpDownに現在の値と、値を更新するための関数を渡す */}
-                <CustomNumberUpDown value={quantity} onValueChange={setQuantity} />
-                <p style={{ width: 'auto', fontSize: '25px', fontWeight: 'bold' }}>個</p>
-            </div>
-        );
-    };
-
-    const DeleteButton = () => {
-        return (
-            <button style={{ height: '100%', padding: 0 }}>
-                <FaMinusSquare size={'60%'} color={'#ff6464'} onClick={() => handleDeleteClick} />
-            </button>
-        );
-    };
-
-    const ItemEditor = () => {
-        return (
-            <div style={{ height: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'flex-end' }}>
-                <div style={{ alignContent: 'right' }}>
-                    <QuantitySelector />
-                </div>
-                <div style={{ width: '50px' }}>
-                    <DeleteButton />
-                </div>
-            </div>
-        );
-    };
-
     return (
-        <CardBase title={title} category={category} imageUrl={imageUrl} >
-            <ItemEditor />
+        <CardBase title={title} category={category} imageUrl={imageUrl}>
+            <ItemEditor
+                quantity={quantity}
+                onQuantityChange={setQuantity}
+                handleDeleteClick={handleDeleteClick}
+            />
         </CardBase>
     );
 };
