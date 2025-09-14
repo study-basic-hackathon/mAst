@@ -1,9 +1,10 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import ConfirmationModal from '../components/Modal/ConfirmationModal';
 import PartCardList from '../components/page_components/Edit/PartCardList';
 import EditPageActions from '../components/page_components/Edit/EditPageActions';
 import { usePartsManager, Part } from '../hooks/usePartsManager';
 import { useConfirmationModal } from '../hooks/useConfirmationModal';
+import { useImageUploader } from '../hooks/useImageUploader';
 
 const Edit: React.FC = () => {
   const {
@@ -27,33 +28,27 @@ const Edit: React.FC = () => {
     confirm,
   } = useConfirmationModal<Part>();
 
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [selectedPartId, setSelectedPartId] = useState<number | null>(null);
+  // --- 画像選択ロジック ---
+  const selectedPartIdRef = useRef<number | null>(null);
+
+  const handleFileSelected = (file: File) => {
+    if (selectedPartIdRef.current === null) return;
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const newImageUrl = reader.result as string;
+      stageImageChange(selectedPartIdRef.current!, newImageUrl, file);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const { triggerFileDialog, UploaderInputComponent } = useImageUploader(handleFileSelected);
 
   const handleImageClick = (partId: number) => {
-    setSelectedPartId(partId);
-    fileInputRef.current?.click();
+    selectedPartIdRef.current = partId;
+    triggerFileDialog();
   };
-
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    const partId = selectedPartId;
-
-    if (file && partId !== null) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const newImageUrl = reader.result as string;
-        // プレビュー表示と、アップロード用のファイル情報をフックに渡す
-        stageImageChange(partId, newImageUrl, file);
-      };
-      reader.readAsDataURL(file);
-    }
-    // 同じファイルを再度選択できるように、inputの値をリセットします
-    if(fileInputRef.current) {
-        fileInputRef.current.value = '';
-    }
-    setSelectedPartId(null);
-  };
+  // --- ここまで ---
 
   const handleConfirmDelete = () => {
     confirm(part => handleDelete(part.id));
@@ -61,13 +56,7 @@ const Edit: React.FC = () => {
 
   return (
     <div style={{ height: '100%', width: '100%', display: 'flex', flexDirection: 'column' }}>
-      <input
-        type="file"
-        ref={fileInputRef}
-        onChange={handleFileChange}
-        style={{ display: 'none' }}
-        accept="image/*"
-      />
+      <UploaderInputComponent />
       <div className="searchArea" style={{ alignItems: 'flex-start', flexBasis: '30%' }}>
         <div className="searchBox" style={{ height: '100%', width: '100%', backgroundColor: 'violet' }}></div>
       </div>
