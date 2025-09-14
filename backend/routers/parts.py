@@ -1,6 +1,8 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from typing import List
 import mysql.connector
+import shutil
+import os
 import schemas
 from crud import parts as crud_parts
 from database import get_db_connection
@@ -30,4 +32,38 @@ def delete_part(parts_id: int, db: mysql.connector.MySQLConnection = Depends(get
             raise HTTPException(status_code=404, detail="Part not found")
         return {"message": "Part deleted successfully", "parts_id": parts_id}
     except mysql.connector.Error as e:
+        raise HTTPException(status_code=500, detail=f"Database query error: {e}")
+
+@router.post("/{part_id}/image")
+async def upload_part_image(part_id: int, file: UploadFile = File(...), db: mysql.connector.MySQLConnection = Depends(get_db_connection)):
+    if db is None:
+        raise HTTPException(status_code=503, detail="Database connection failed")
+
+    # ファイル名を安全に生成（例：part_id.jpg）
+    file_extension = os.path.splitext(file.filename)[1]
+    file_name = f"{part_id}{file_extension}"
+    file_path = os.path.join("static", "images", file_name)
+    
+    # ファイルを保存
+    try:
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Could not save file: {e}")
+    finally:
+        file.file.close()
+
+    # データベースを更新
+    # クライアントがアクセスするためのURLパス（/static/images/1.jpg など）
+    image_url = f"/static/images/{file_name}"
+    try:
+        rowcount = crud_parts.update_image_url(db, part_id, image_url)
+        if rowcount == 0:
+            # If the part doesn't exist, delete the uploaded file
+            os.remove(file_path)
+            raise HTTPException(status_code=404, detail="Part not found")
+        return {"message": "Image uploaded successfully", "imageUrl": image_url}
+    except mysql.connector.Error as e:
+        # If DB update fails, delete the uploaded file
+        os.remove(file_path)
         raise HTTPException(status_code=500, detail=f"Database query error: {e}")

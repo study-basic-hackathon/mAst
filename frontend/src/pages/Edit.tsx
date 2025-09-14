@@ -13,7 +13,7 @@ const Edit: React.FC = () => {
     error,
     hasChanges,
     handleQuantityChange,
-    handleImageChange,
+    stageImageChange,
     handleCancel,
     handleUpdate,
     handleDelete,
@@ -37,11 +37,14 @@ const Edit: React.FC = () => {
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file && selectedPartId !== null) {
+    const partId = selectedPartId;
+
+    if (file && partId !== null) {
       const reader = new FileReader();
       reader.onloadend = () => {
         const newImageUrl = reader.result as string;
-        handleImageChange(selectedPartId, newImageUrl);
+        // プレビュー表示と、アップロード用のファイル情報をフックに渡す
+        stageImageChange(partId, newImageUrl, file);
       };
       reader.readAsDataURL(file);
     }

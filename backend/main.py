@@ -1,7 +1,15 @@
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 from routers import inventory, parts
+import os
 
 app = FastAPI()
+
+# 静的ファイル用のディレクトリが存在することを確認
+os.makedirs("static/images", exist_ok=True)
+
+# Mount static files directory
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # ルーターを登録
 app.include_router(inventory.router)

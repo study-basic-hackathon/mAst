@@ -26,6 +26,7 @@ erDiagram
         BigInt id PK
         BigInt c_id FK
         BigInt p_num UK "型番"
+        string imageUrl "画像URL"
         string p_name "部品名"
     }
 
