@@ -17,6 +17,18 @@ services:
       - "5173:5173"
     command: npm run dev
 
+  # Reactフロントエンドテストサービス
+  frontend-test:
+    container_name: react_frontend_test
+    build:
+      context: ./frontend
+      dockerfile: ./docker/Dockerfile
+    volumes:
+      # ホストのコードをコンテナにマウント（開発用）
+      - ./frontend:/app
+      - /app/node_modules
+    command: npm run test
+
   # FastAPIバックエンドサービス
   backend:
     container_name: fastapi_backend
