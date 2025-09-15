@@ -5,10 +5,10 @@ import React from 'react';
 
 // フックをテストするためのヘルパーコンポーネント
 const TestHarness = ({ onFileSelect }: { onFileSelect: (file: File) => void }) => {
-  const { UploaderInputComponent, triggerFileDialog } = useImageUploader(onFileSelect);
+  const { getInputProps, triggerFileDialog } = useImageUploader(onFileSelect);
   return (
     <div>
-      <UploaderInputComponent />
+      <input {...getInputProps()} data-testid="file-input" />
       <button data-testid="trigger" onClick={triggerFileDialog}>Trigger</button>
     </div>
   );
@@ -19,9 +19,7 @@ describe('useImageUploader フック', () => {
     const mockOnFileSelect = vi.fn();
     render(<TestHarness onFileSelect={mockOnFileSelect} />);
     
-    // DOMからinput要素を取得
-    const inputElement = document.querySelector('input[type="file"]');
-    expect(inputElement).not.toBeNull();
+    const inputElement = screen.getByTestId('file-input');
 
     // clickメソッドをスパイ
     const clickSpy = vi.spyOn(inputElement as HTMLElement, 'click');
@@ -38,8 +36,7 @@ describe('useImageUploader フック', () => {
     const mockOnFileSelect = vi.fn();
     render(<TestHarness onFileSelect={mockOnFileSelect} />);
     
-    const inputElement = document.querySelector('input[type="file"]');
-    expect(inputElement).not.toBeNull();
+    const inputElement = screen.getByTestId('file-input');
 
     const mockFile = new File(['dummy content'], 'test.png', { type: 'image/png' });
 

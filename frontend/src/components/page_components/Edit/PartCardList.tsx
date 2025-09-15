@@ -9,13 +9,13 @@ interface PartCardListProps {
   onQuantityChange: (partId: number, newQuantity: number) => void;
   onDeleteClick: (part: Part) => void;
   onImageClick: (partId: number) => void;
-  onSaveNewPart: (newPart: { title: string; category: string; quantity: number; image?: File }) => void;
+  onSaveNewPart: (newPart: { title: string; categoryId: number; quantity: number; image?: File }) => void;
 }
 
 const PartCardList: React.FC<PartCardListProps> = ({ parts, initialParts, onQuantityChange, onDeleteClick, onImageClick, onSaveNewPart }) => {
   const [isCreating, setIsCreating] = useState(false);
 
-  const handleSave = (newPart: { title: string; category: string; quantity: number; image?: File }) => {
+  const handleSave = (newPart: { title: string; categoryId: number; quantity: number; image?: File }) => {
     onSaveNewPart(newPart);
     setIsCreating(false);
   };

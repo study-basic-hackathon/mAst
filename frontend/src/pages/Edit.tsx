@@ -43,7 +43,7 @@ const Edit: React.FC = () => {
     reader.readAsDataURL(file);
   };
 
-  const { triggerFileDialog, UploaderInputComponent } = useImageUploader(handleFileSelected);
+  const { triggerFileDialog, getInputProps } = useImageUploader(handleFileSelected);
 
   const handleImageClick = (partId: number) => {
     selectedPartIdRef.current = partId;
@@ -57,7 +57,7 @@ const Edit: React.FC = () => {
 
   return (
     <div style={{ height: '100%', width: '100%', display: 'flex', flexDirection: 'column' }}>
-      <UploaderInputComponent />
+      <input {...getInputProps()} />
       <div className="searchArea" style={{ alignItems: 'flex-start', flexBasis: '30%' }}>
         <div className="searchBox" style={{ height: '100%', width: '100%', backgroundColor: 'violet' }}></div>
       </div>

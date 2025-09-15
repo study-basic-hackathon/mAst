@@ -3,6 +3,16 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import CardEditor from './CardEditor';
 import React from 'react';
 
+vi.mock('../common/CustomNumberUpDown', () => ({
+  default: ({ value, onValueChange }: { value: number, onValueChange: (v: number) => void }) => (
+    <div>
+      <input type="text" value={value} onChange={(e) => onValueChange(Number(e.target.value))} />
+      <button data-testid="plus-button" onClick={() => onValueChange(value + 1)}>+</button>
+      <button data-testid="minus-button" onClick={() => onValueChange(value - 1)}>-</button>
+    </div>
+  ),
+}));
+
 describe('CardEditor コンポーネント', () => {
   const defaultProps = {
     title: 'テスト部品',

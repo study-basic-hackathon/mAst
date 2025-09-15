@@ -28,19 +28,16 @@ export const useImageUploader = (onFileSelect: ImageChangeHandler) => {
     }
   }, [onFileSelect]);
 
-  // ページにレンダリングする必要がある非表示のinput要素
-  const UploaderInputComponent: React.FC = () => (
-    <input
-      type="file"
-      ref={fileInputRef}
-      onChange={handleFileChange}
-      style={{ display: 'none' }}
-      accept="image/*"
-    />
-  );
+  const getInputProps = useCallback(() => ({
+    ref: fileInputRef,
+    onChange: handleFileChange,
+    style: { display: 'none' },
+    accept: "image/*",
+    type: "file" as const,
+  }), [handleFileChange]);
 
   return {
     triggerFileDialog,
-    UploaderInputComponent,
+    getInputProps,
   };
 };
