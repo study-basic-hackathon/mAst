@@ -36,8 +36,8 @@ describe('CardCreator', () => {
     expect(screen.getByPlaceholderText(/部品名/i)).toBeInTheDocument();
     expect(screen.getByRole('combobox')).toBeInTheDocument();
     expect(screen.getByDisplayValue('0')).toBeInTheDocument(); // 個数入力
-    expect(screen.getByRole('button', { name: /登録/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /キャンセル/i })).toBeInTheDocument();
+    expect(screen.getByTestId('save-button')).toBeInTheDocument();
+    expect(screen.getByTestId('cancel-button')).toBeInTheDocument();
   });
 
   it('入力の変更を処理する', () => {
@@ -63,7 +63,7 @@ describe('CardCreator', () => {
     fireEvent.change(screen.getByRole('combobox'), { target: { value: '2' } });
     fireEvent.click(screen.getByTestId('plus-button'));
 
-    fireEvent.click(screen.getByRole('button', { name: /登録/i }));
+    fireEvent.click(screen.getByTestId('save-button'));
 
     expect(mockOnSave).toHaveBeenCalledWith({
       title: 'Test Part',
@@ -75,7 +75,7 @@ describe('CardCreator', () => {
 
   it('キャンセルボタンがクリックされた時、onCancelが呼び出される', () => {
     renderComponent();
-    fireEvent.click(screen.getByRole('button', { name: /キャンセル/i }));
+    fireEvent.click(screen.getByTestId('cancel-button'));
     expect(mockOnCancel).toHaveBeenCalledTimes(1);
   });
 
@@ -102,7 +102,7 @@ describe('CardCreator', () => {
       fireEvent.change(fileInput, { target: { files: [file] } });
     });
 
-    fireEvent.click(screen.getByRole('button', { name: /登録/i }));
+    fireEvent.click(screen.getByTestId('save-button'));
 
     expect(mockOnSave).toHaveBeenCalledWith({
       title: 'Part with Image',
@@ -114,7 +114,7 @@ describe('CardCreator', () => {
 
   it('部品名かカテゴリが空の時、登録ボタンは無効化される', () => {
     renderComponent();
-    const saveButton = screen.getByRole('button', { name: /登録/i });
+    const saveButton = screen.getByTestId('save-button');
     expect(saveButton).toBeDisabled();
 
     fireEvent.change(screen.getByPlaceholderText(/部品名/i), { target: { value: 'Test' } });

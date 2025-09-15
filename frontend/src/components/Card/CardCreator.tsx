@@ -1,7 +1,9 @@
 import React, { useState, useRef, ChangeEvent } from 'react';
 import { useCategories } from '../../hooks/useCategories';
 import { CardBase } from './CardBase';
-import { FaPlusCircle, FaMinusCircle } from "react-icons/fa";
+import { FaPlusCircle, FaMinusCircle, FaCheckCircle,  } from "react-icons/fa";
+import { TfiClose } from 'react-icons/tfi';
+
 
 interface CardCreatorProps {
   onSave: (newPart: { title: string; categoryId: number; quantity: number; image?: File }) => void;
@@ -94,27 +96,39 @@ const CardCreator: React.FC<CardCreatorProps> = ({ onSave, onCancel }) => {
             <CustomNumberUpDown value={quantity} onValueChange={setQuantity} />
             <p style={{ width: 'auto', fontSize: '25px', fontWeight: 'bold', margin: '0 5px 0 0' }}>個</p>
         </div>
-        <div style={{marginLeft: '10px', display: 'flex'}}>
-          <button 
+        <div style={{marginLeft: '10px', display: 'flex', flexWrap: 'nowrap', alignItems: 'center'}}>
+          <button
+            data-testid="save-button"
             onClick={handleSave} 
             disabled={isSaveDisabled}
             style={{
               marginRight: '5px', 
               color: 'white', 
-              backgroundColor: '#4CAF50',
+              backgroundColor: isSaveDisabled ? 'grey' : '#4CAF50',
               cursor: isSaveDisabled ? 'not-allowed' : 'pointer',
               border: 'none',
-              padding: '5px 10px',
-              borderRadius: '3px'
-            }}>登録</button>
-          <button 
+              padding: '8px 12px',
+              borderRadius: '5px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              minHeight: '36px',
+              transition: 'all 0.2s ease-in-out',
+            }}><FaCheckCircle size={20} /></button>
+          <button
+            data-testid="cancel-button"
             onClick={onCancel}
             style={{
               border: 'none',
-              padding: '5px 10px',
-              borderRadius: '3px'
+              padding: '8px 12px',
+              borderRadius: '5px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              minHeight: '36px',
+              transition: 'all 0.2s ease-in-out',
             }}
-          >キャンセル</button>
+          ><TfiClose size={20} /></button>
         </div>
       </div>
     </CardBase>

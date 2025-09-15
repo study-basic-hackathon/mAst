@@ -46,7 +46,7 @@ describe('PartCardList', () => {
     const addButton = screen.getByRole('button', { name: /パーツを追加/i });
     fireEvent.click(addButton);
     
-    expect(screen.getByLabelText(/部品名/i)).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/部品名/i)).toBeInTheDocument();
   });
 
   it('部品データが空の場合、「表示するパーツがありません。」というメッセージを表示する', () => {
