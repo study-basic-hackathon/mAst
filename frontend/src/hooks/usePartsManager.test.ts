@@ -1,39 +1,97 @@
-import { renderHook, act } from '@testing-library/react';
-import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
+import { renderHook, act, waitFor } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { usePartsManager } from './usePartsManager';
-import * as partsApi from '../api/partsApi';
+import { usePartsApi } from './usePartsApi';
+import { Part, NewPart } from '../api/partsApi';
 
-vi.mock('../api/partsApi');
+vi.mock('./usePartsApi');
+
+const mockInitialParts: Part[] = [
+  { id: 1, title: 'Part 1', quantity: 10, imageUrl: 'url1', inventoryId: 101, category: 'Category A' },
+];
 
 describe('usePartsManager', () => {
+  const mockCreatePart = vi.fn();
+  const mockDeletePart = vi.fn();
+  const mockUpdateParts = vi.fn();
+  const mockReload = vi.fn();
+
   beforeEach(() => {
-    vi.mocked(partsApi.fetchParts).mockResolvedValue([]);
+    vi.clearAllMocks();
+    vi.mocked(usePartsApi).mockReturnValue({
+      parts: mockInitialParts,
+      isLoading: false,
+      isUpdating: false,
+      error: null,
+      reload: mockReload,
+      createPart: mockCreatePart,
+      deletePart: mockDeletePart,
+      updateParts: mockUpdateParts,
+    });
   });
 
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
-  it('新しい部品を正常に作成する', async () => {
-    const mockCreatedPart: partsApi.Part = { id: 1, inventoryId: 101, title: 'New Part', category: 'Category A', quantity: 10, imageUrl: '' };
+  it('初期状態で正しく部品が設定される', async () => {
+    const { result } = renderHook(() => usePartsManager());
     
-    vi.mocked(partsApi.createPart).mockResolvedValue(mockCreatedPart);
-    vi.mocked(partsApi.fetchParts).mockResolvedValueOnce([]).mockResolvedValueOnce([mockCreatedPart]);
+    await waitFor(() => {
+      expect(result.current.parts).toEqual(mockInitialParts);
+      expect(result.current.initialParts).toEqual(mockInitialParts);
+    });
+  });
 
+  it('handleSaveNewPart が usePartsApi の createPart を呼び出す', async () => {
+    const { result } = renderHook(() => usePartsManager());
+    const newPart: NewPart = { title: 'New Part', categoryId: 1, quantity: 5 };
+
+    await act(async () => {
+      await result.current.handleSaveNewPart(newPart);
+    });
+
+    expect(mockCreatePart).toHaveBeenCalledWith(newPart);
+  });
+
+  it('handleDelete が usePartsApi の deletePart を呼び出す', async () => {
     const { result } = renderHook(() => usePartsManager());
 
     await act(async () => {
-      await new Promise(resolve => setTimeout(resolve, 0));
+      await result.current.handleDelete(1);
     });
 
-    const newPartData = { title: 'New Part', categoryId: 1, quantity: 10 };
+    expect(mockDeletePart).toHaveBeenCalledWith(1);
+  });
+
+  it('handleUpdate が数量が変更された部品データと共に updateParts を呼び出す', async () => {
+    const { result } = renderHook(() => usePartsManager());
+    
+    // 数量を変更する
     await act(async () => {
-      await result.current.handleSaveNewPart(newPartData);
+      result.current.handleQuantityChange(1, 15);
     });
 
-    expect(partsApi.createPart).toHaveBeenCalledWith(newPartData);
-    expect(partsApi.fetchParts).toHaveBeenCalledTimes(2);
-    expect(result.current.parts).toEqual([mockCreatedPart]);
-    expect(result.current.error).toBeNull();
+    // 更新処理を呼び出す
+    await act(async () => {
+      await result.current.handleUpdate();
+    });
+
+    const expectedInventoryChangedPart = { ...mockInitialParts[0], quantity: 15 };
+    expect(mockUpdateParts).toHaveBeenCalledWith([expectedInventoryChangedPart], expect.any(Map));
+  });
+
+  it('handleUpdate が画像のみ変更された場合、在庫更新API用のデータは空で updateParts を呼び出す', async () => {
+    const { result } = renderHook(() => usePartsManager());
+    const mockFile = new File([''], 'image.png', { type: 'image/png' });
+    
+    // 画像を変更する
+    await act(async () => {
+      result.current.stageImageChange(1, 'new-url', mockFile);
+    });
+
+    // 更新処理を呼び出す
+    await act(async () => {
+      await result.current.handleUpdate();
+    });
+
+    // 数量は変わっていないので、在庫更新用の配列は空になる
+    expect(mockUpdateParts).toHaveBeenCalledWith([], expect.any(Map));
   });
 });
