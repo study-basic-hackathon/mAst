@@ -29,22 +29,28 @@ const PartCardList: React.FC<PartCardListProps> = ({ parts, initialParts, onQuan
       ) : (
         <CardCreator onSave={handleSave} onCancel={() => setIsCreating(false)} />
       )}
-      {parts.map((part) => {
-        const initialPart = initialParts.find(p => p.id === part.id);
-        return (
-          <CardEditor
-            key={part.id}
-            title={part.title}
-            category={part.category}
-            quantity={part.quantity}
-            initialQuantity={initialPart ? initialPart.quantity : 0}
-            imageUrl={part.imageUrl}
-            onQuantityChange={(newQuantity) => onQuantityChange(part.id, newQuantity)}
-            handleDeleteClick={() => onDeleteClick(part)}
-            onImageClick={() => onImageClick(part.id)}
-          />
-        );
-      })}
+      {parts.length === 0 && !isCreating ? (
+        <div style={{ textAlign: 'center', margin: '10px' }}>
+          <p>表示するパーツがありません。</p>
+        </div>
+      ) : (
+        parts.map((part) => {
+          const initialPart = initialParts.find(p => p.id === part.id);
+          return (
+            <CardEditor
+              key={part.id}
+              title={part.title}
+              category={part.category}
+              quantity={part.quantity}
+              initialQuantity={initialPart ? initialPart.quantity : 0}
+              imageUrl={part.imageUrl}
+              onQuantityChange={(newQuantity) => onQuantityChange(part.id, newQuantity)}
+              handleDeleteClick={() => onDeleteClick(part)}
+              onImageClick={() => onImageClick(part.id)}
+            />
+          );
+        })
+      )}
     </div>
   );
 };

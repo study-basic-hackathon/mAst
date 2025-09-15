@@ -48,4 +48,19 @@ describe('PartCardList', () => {
     
     expect(screen.getByLabelText(/部品名/i)).toBeInTheDocument();
   });
+
+  it('部品データが空の場合、「表示するパーツがありません。」というメッセージを表示する', () => {
+    render(
+      <PartCardList
+        parts={[]}
+        initialParts={[]}
+        onQuantityChange={vi.fn()}
+        onDeleteClick={vi.fn()}
+        onImageClick={vi.fn()}
+        onSaveNewPart={vi.fn()}
+      />
+    );
+
+    expect(screen.getByText('表示するパーツがありません。')).toBeInTheDocument();
+  });
 });
