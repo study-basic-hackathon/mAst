@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import * as partsApi from '../api/partsApi';
+import * as inventoryApi from '../api/inventoryApi';
 import { Part, NewPart } from '../api/partsApi';
 
 export type { Part };
@@ -65,7 +66,7 @@ export const usePartsManager = () => {
 
       if (changedParts.length > 0) {
         const payload = changedParts.map(p => ({ id: p.inventoryId, quantity: p.quantity }));
-        await partsApi.batchUpdateInventory(payload);
+        await inventoryApi.batchUpdateInventory(payload);
       }
 
       await loadParts();
