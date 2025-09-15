@@ -15,19 +15,25 @@ describe('usePartsManager', () => {
   const mockDeletePart = vi.fn();
   const mockUpdateParts = vi.fn();
   const mockReload = vi.fn();
+  const mockResetUpdateStatus = vi.fn();
+
+  // モックの基本値を定義
+  const baseMockUsePartsApi = {
+    parts: mockInitialParts,
+    isLoading: false,
+    isUpdating: false,
+    error: null,
+    reload: mockReload,
+    createPart: mockCreatePart,
+    deletePart: mockDeletePart,
+    updateParts: mockUpdateParts,
+    isUpdateSuccessful: false,
+    resetUpdateStatus: mockResetUpdateStatus,
+  };
 
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(usePartsApi).mockReturnValue({
-      parts: mockInitialParts,
-      isLoading: false,
-      isUpdating: false,
-      error: null,
-      reload: mockReload,
-      createPart: mockCreatePart,
-      deletePart: mockDeletePart,
-      updateParts: mockUpdateParts,
-    });
+    vi.mocked(usePartsApi).mockReturnValue(baseMockUsePartsApi);
   });
 
   it('初期状態で正しく部品が設定される', async () => {
@@ -93,5 +99,19 @@ describe('usePartsManager', () => {
 
     // 数量は変わっていないので、在庫更新用の配列は空になる
     expect(mockUpdateParts).toHaveBeenCalledWith([], expect.any(Map));
+  });
+
+  it('更新成功状態とリセット関数を正しく返す', () => {
+    // isUpdateSuccessfulがtrueの場合をテストするためにモックを上書き
+    // 再レンダリングで値がリセットされないよう、mockReturnValue を使用する
+    vi.mocked(usePartsApi).mockReturnValue({
+      ...baseMockUsePartsApi,
+      isUpdateSuccessful: true,
+    });
+
+    const { result } = renderHook(() => usePartsManager());
+
+    expect(result.current.isUpdateSuccessful).toBe(true);
+    expect(result.current.resetUpdateStatus).toBe(mockResetUpdateStatus);
   });
 });

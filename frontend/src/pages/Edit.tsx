@@ -1,10 +1,9 @@
-import React, { useRef } from 'react';
-import ConfirmationModal from '../components/Modal/ConfirmationModal';
+import React, { useEffect } from 'react';
 import PartCardList from '../components/page_components/Edit/PartCardList';
 import EditPageActions from '../components/page_components/Edit/EditPageActions';
-import { usePartsManager, Part } from '../hooks/usePartsManager';
-import { useConfirmationModal } from '../hooks/useConfirmationModal';
+import { usePartsManager } from '../hooks/usePartsManager';
 import { useImageUploader } from '../hooks/useImageUploader';
+import { useEditPageModals } from '../hooks/useEditPageModals';
 
 const Edit: React.FC = () => {
   const {
@@ -19,15 +18,24 @@ const Edit: React.FC = () => {
     handleUpdate,
     handleDelete,
     handleSaveNewPart,
+    isUpdateSuccessful,
+    resetUpdateStatus,
   } = usePartsManager();
 
   const {
-    isModalOpen,
-    itemToProcess,
-    openModal,
-    closeModal,
-    confirm,
-  } = useConfirmationModal<Part>();
+    openDeleteModal,
+    openSuccessModal,
+    ModalsComponent,
+  } = useEditPageModals({
+    onConfirmDelete: handleDelete,
+  });
+
+  useEffect(() => {
+    if (isUpdateSuccessful) {
+      openSuccessModal();
+      resetUpdateStatus(); // モーダルを開いたらすぐにステータスをリセット
+    }
+  }, [isUpdateSuccessful, openSuccessModal, resetUpdateStatus]);
 
   const handleFileSelected = (file: File, partId: number) => {
     const reader = new FileReader();
@@ -40,12 +48,9 @@ const Edit: React.FC = () => {
 
   const { triggerFileDialog: handleImageClick, getInputProps } = useImageUploader<number>(handleFileSelected);
 
-  const handleConfirmDelete = () => {
-    confirm(part => handleDelete(part.id));
-  };
-
   return (
     <div style={{ height: '100%', width: '100%', display: 'flex', flexDirection: 'column' }}>
+      <ModalsComponent />
       <input {...getInputProps()} />
       <div className="searchArea" style={{ alignItems: 'flex-start', flexBasis: '30%' }}>
         <div className="searchBox" style={{ height: '100%', width: '100%', backgroundColor: 'violet' }}></div>
@@ -57,7 +62,7 @@ const Edit: React.FC = () => {
         parts={parts}
         initialParts={initialParts}
         onQuantityChange={handleQuantityChange}
-        onDeleteClick={openModal}
+        onDeleteClick={openDeleteModal}
         onImageClick={handleImageClick}
         onSaveNewPart={handleSaveNewPart}
       />
@@ -67,13 +72,6 @@ const Edit: React.FC = () => {
         onUpdate={handleUpdate}
         hasChanges={hasChanges}
         isUpdating={isUpdating}
-      />
-
-      <ConfirmationModal
-        isOpen={isModalOpen}
-        onClose={closeModal}
-        onConfirm={handleConfirmDelete}
-        message={`「${itemToProcess?.title}」を本当に削除しますか？`}
       />
     </div>
   );

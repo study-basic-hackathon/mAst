@@ -8,6 +8,7 @@ export const usePartsApi = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isUpdating, setIsUpdating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isUpdateSuccessful, setIsUpdateSuccessful] = useState(false);
 
   const loadParts = useCallback(async () => {
     setIsLoading(true);
@@ -63,6 +64,7 @@ export const usePartsApi = () => {
       }
 
       await loadParts();
+      setIsUpdateSuccessful(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An unknown error occurred during the update process.');
       await loadParts(); // Reload to reset state on error
@@ -70,6 +72,10 @@ export const usePartsApi = () => {
       setIsUpdating(false);
     }
   }, [loadParts]);
+
+  const resetUpdateStatus = useCallback(() => {
+    setIsUpdateSuccessful(false);
+  }, []);
 
   return {
     parts,
@@ -80,5 +86,7 @@ export const usePartsApi = () => {
     deletePart,
     createPart,
     updateParts,
+    isUpdateSuccessful,
+    resetUpdateStatus,
   };
 };

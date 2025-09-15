@@ -14,6 +14,8 @@ export const usePartsManager = () => {
     deletePart,
     createPart,
     updateParts,
+    isUpdateSuccessful,
+    resetUpdateStatus,
   } = usePartsApi();
 
   const {
@@ -55,5 +57,7 @@ export const usePartsManager = () => {
     handleUpdate,
     handleDelete: deletePart,
     handleSaveNewPart: createPart,
+    isUpdateSuccessful,
+    resetUpdateStatus,
   };
 };

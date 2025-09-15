@@ -5,9 +5,22 @@ interface ConfirmationModalProps {
   onClose: () => void;
   onConfirm: () => void;
   message: string;
+  confirmLabel?: string;
+  cancelLabel?: string;
+  showCancelButton?: boolean;
+  confirmButtonColor?: string;
 }
 
-const ConfirmationModal: React.FC<ConfirmationModalProps> = ({ isOpen, onClose, onConfirm, message }) => {
+const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
+  isOpen,
+  onClose,
+  onConfirm,
+  message,
+  confirmLabel = 'はい',
+  cancelLabel = 'いいえ',
+  showCancelButton = true,
+  confirmButtonColor = '#ff6464',
+}) => {
   if (!isOpen) {
     return null;
   }
@@ -50,7 +63,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({ isOpen, onClose, 
 
   const confirmButtonStyle: React.CSSProperties = {
     ...buttonStyle,
-    backgroundColor: '#ff6464',
+    backgroundColor: confirmButtonColor,
     color: 'white',
   };
 
@@ -64,8 +77,8 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({ isOpen, onClose, 
       <div style={contentStyle} onClick={(e) => e.stopPropagation()}>
         <p style={{ fontSize: '18px', margin: 0 }}>{message}</p>
         <div style={buttonContainerStyle}>
-          <button style={cancelButtonStyle} onClick={onClose}>いいえ</button>
-          <button style={confirmButtonStyle} onClick={onConfirm}>はい</button>
+          {showCancelButton && <button style={cancelButtonStyle} onClick={onClose}>{cancelLabel}</button>}
+          <button style={confirmButtonStyle} onClick={onConfirm}>{confirmLabel}</button>
         </div>
       </div>
     </div>
