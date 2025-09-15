@@ -5,7 +5,7 @@ import CardCreator from './CardCreator';
 
 import { vi } from 'vitest';
 import { fireEvent } from '@testing-library/react';
-import * as useCategories from '../../../hooks/useCategories';
+import * as useCategories from '../../hooks/useCategories';
 
 vi.mock('../../../hooks/useCategories');
 
@@ -27,7 +27,7 @@ describe('CardCreator', () => {
     render(<CardCreator onSave={mockOnSave} onCancel={mockOnCancel} />);
   };
 
-  it('renders all form elements', () => {
+  it('すべてのフォーム要素を描画する', () => {
     renderComponent();
     expect(screen.getByRole('button', { name: /画像を選択/i })).toBeInTheDocument();
     expect(screen.getByLabelText(/部品名/i)).toBeInTheDocument();
@@ -37,7 +37,7 @@ describe('CardCreator', () => {
     expect(screen.getByRole('button', { name: /キャンセル/i })).toBeInTheDocument();
   });
 
-  it('handles input changes', () => {
+  it('入力の変更を処理する', () => {
     renderComponent();
     const nameInput = screen.getByLabelText(/部品名/i) as HTMLInputElement;
     const categorySelect = screen.getByLabelText(/カテゴリー/i) as HTMLSelectElement;
@@ -52,7 +52,7 @@ describe('CardCreator', () => {
     expect(quantityInput.value).toBe('123');
   });
 
-  it('calls onSave with the correct data when save button is clicked', () => {
+  it('登録ボタンがクリックされた時、onSaveが正しいデータで呼び出される', () => {
     renderComponent();
     fireEvent.change(screen.getByLabelText(/部品名/i), { target: { value: 'Test Part' } });
     fireEvent.change(screen.getByLabelText(/カテゴリー/i), { target: { value: '2' } }); // Category B's id
@@ -68,7 +68,7 @@ describe('CardCreator', () => {
     });
   });
 
-  it('calls onCancel when cancel button is clicked', () => {
+  it('キャンセルボタンがクリックされた時、onCancelが呼び出される', () => {
     renderComponent();
     fireEvent.click(screen.getByRole('button', { name: /キャンセル/i }));
     expect(mockOnCancel).toHaveBeenCalledTimes(1);

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useCategories } from '../../../hooks/useCategories';
+import { useCategories } from '../../hooks/useCategories';
 
 interface CardCreatorProps {
   onSave: (newPart: { title: string; categoryId: number; quantity: number; image?: File }) => void;
