@@ -4,12 +4,12 @@ import { useImageUploader } from './useImageUploader';
 import React from 'react';
 
 // フックをテストするためのヘルパーコンポーネント
-const TestHarness = ({ onFileSelect }: { onFileSelect: (file: File) => void }) => {
-  const { getInputProps, triggerFileDialog } = useImageUploader(onFileSelect);
+const TestHarness = <T,>({ onFileSelect, context }: { onFileSelect: (file: File, context: T) => void, context: T }) => {
+  const { getInputProps, triggerFileDialog } = useImageUploader<T>(onFileSelect);
   return (
     <div>
       <input {...getInputProps()} data-testid="file-input" />
-      <button data-testid="trigger" onClick={triggerFileDialog}>Trigger</button>
+      <button data-testid="trigger" onClick={() => triggerFileDialog(context)}>Trigger</button>
     </div>
   );
 };
@@ -17,7 +17,8 @@ const TestHarness = ({ onFileSelect }: { onFileSelect: (file: File) => void }) =
 describe('useImageUploader フック', () => {
   it('triggerFileDialogがinputのclickイベントを発火させるべき', () => {
     const mockOnFileSelect = vi.fn();
-    render(<TestHarness onFileSelect={mockOnFileSelect} />);
+    const context = { id: 1 };
+    render(<TestHarness onFileSelect={mockOnFileSelect} context={context} />);
     
     const inputElement = screen.getByTestId('file-input');
 
@@ -34,9 +35,14 @@ describe('useImageUploader フック', () => {
 
   it('ファイル選択時にonFileSelectコールバックが呼び出されるべき', () => {
     const mockOnFileSelect = vi.fn();
-    render(<TestHarness onFileSelect={mockOnFileSelect} />);
+    const context = { partId: 123 };
+    render(<TestHarness onFileSelect={mockOnFileSelect} context={context} />);
     
     const inputElement = screen.getByTestId('file-input');
+    const triggerButton = screen.getByTestId('trigger');
+
+    // contextを設定するためにトリガーをクリック
+    fireEvent.click(triggerButton);
 
     const mockFile = new File(['dummy content'], 'test.png', { type: 'image/png' });
 
@@ -45,6 +51,6 @@ describe('useImageUploader フック', () => {
 
     // コールバックが正しい引数で呼ばれたことを確認
     expect(mockOnFileSelect).toHaveBeenCalledTimes(1);
-    expect(mockOnFileSelect).toHaveBeenCalledWith(mockFile);
+    expect(mockOnFileSelect).toHaveBeenCalledWith(mockFile, context);
   });
 });

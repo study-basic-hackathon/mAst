@@ -29,27 +29,16 @@ const Edit: React.FC = () => {
     confirm,
   } = useConfirmationModal<Part>();
 
-  // --- 画像選択ロジック ---
-  const selectedPartIdRef = useRef<number | null>(null);
-
-  const handleFileSelected = (file: File) => {
-    if (selectedPartIdRef.current === null) return;
-
+  const handleFileSelected = (file: File, partId: number) => {
     const reader = new FileReader();
     reader.onloadend = () => {
       const newImageUrl = reader.result as string;
-      stageImageChange(selectedPartIdRef.current!, newImageUrl, file);
+      stageImageChange(partId, newImageUrl, file);
     };
     reader.readAsDataURL(file);
   };
 
-  const { triggerFileDialog, getInputProps } = useImageUploader(handleFileSelected);
-
-  const handleImageClick = (partId: number) => {
-    selectedPartIdRef.current = partId;
-    triggerFileDialog();
-  };
-  // --- ここまで ---
+  const { triggerFileDialog: handleImageClick, getInputProps } = useImageUploader<number>(handleFileSelected);
 
   const handleConfirmDelete = () => {
     confirm(part => handleDelete(part.id));
