@@ -9,22 +9,24 @@ describe('useConfirmationModal フック', () => {
     expect(result.current.itemToProcess).toBe(null);
   });
 
-  it('openModalを呼び出すとモーダルが開き、アイテムがセットされるべき', () => {
+  it('openModalを呼び出すとモーダルが開き、アイテムとアクションがセットされるべき', () => {
     const { result } = renderHook(() => useConfirmationModal<string>());
-    
+    const mockAction = vi.fn();
+
     act(() => {
-      result.current.openModal('テストアイテム');
+      result.current.openModal('テストアイテム', mockAction);
     });
 
     expect(result.current.isModalOpen).toBe(true);
     expect(result.current.itemToProcess).toBe('テストアイテム');
   });
 
-  it('closeModalを呼び出すとモーダルが閉じ、アイテムがリセットされるべき', () => {
+  it('closeModalを呼び出すとモーダルが閉じ、アイテムとアクションがリセットされるべき', () => {
     const { result } = renderHook(() => useConfirmationModal<string>());
-    
+    const mockAction = vi.fn();
+
     act(() => {
-      result.current.openModal('テストアイテム');
+      result.current.openModal('テストアイテム', mockAction);
     });
     
     act(() => {
@@ -40,25 +42,24 @@ describe('useConfirmationModal フック', () => {
     const mockAction = vi.fn();
     
     act(() => {
-      result.current.openModal('テストアイテム');
+      result.current.openModal('テストアイテム', mockAction);
     });
     
     act(() => {
-      result.current.confirm(mockAction);
+      result.current.confirm();
     });
 
     expect(mockAction).toHaveBeenCalledTimes(1);
-    expect(mockAction).toHaveBeenCalledWith('テストアイテム');
     expect(result.current.isModalOpen).toBe(false);
     expect(result.current.itemToProcess).toBe(null);
   });
 
-  it('アイテムがない状態でconfirmを呼び出してもアクションは実行されないべき', () => {
+  it('アクションがセットされていない状態でconfirmを呼び出してもアクションは実行されないべき', () => {
     const { result } = renderHook(() => useConfirmationModal<string>());
     const mockAction = vi.fn();
     
     act(() => {
-      result.current.confirm(mockAction);
+      result.current.confirm();
     });
 
     expect(mockAction).not.toHaveBeenCalled();

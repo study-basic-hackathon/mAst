@@ -32,7 +32,7 @@ const Edit: React.FC = () => {
 
   useEffect(() => {
     if (isUpdateSuccessful) {
-      openSuccessModal();
+      openSuccessModal('更新が完了しました。');
       resetUpdateStatus(); // モーダルを開いたらすぐにステータスをリセット
     }
   }, [isUpdateSuccessful, openSuccessModal, resetUpdateStatus]);

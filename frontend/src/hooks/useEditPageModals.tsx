@@ -1,6 +1,8 @@
 import React, { useCallback } from 'react';
 import { useConfirmationModal } from './useConfirmationModal';
+import { useNotificationModal } from './useNotificationModal';
 import ConfirmationModal from '../components/Modal/ConfirmationModal';
+import NotificationModal from '../components/Modal/NotificationModal';
 import { Part } from '../api/partsApi';
 
 interface UseEditPageModalsProps {
@@ -18,36 +20,33 @@ export const useEditPageModals = ({ onConfirmDelete }: UseEditPageModalsProps) =
 
   const {
     isModalOpen: isSuccessModalOpen,
+    message: successMessage,
     openModal: openSuccessModal,
     closeModal: closeSuccessModal,
-  } = useConfirmationModal();
+  } = useNotificationModal();
 
-  const handleConfirmDelete = useCallback(() => {
-    confirmDelete(part => onConfirmDelete(part.id));
-  }, [confirmDelete, onConfirmDelete]);
+  const handleOpenDeleteModal = useCallback((part: Part) => {
+    openDeleteModal(part, () => onConfirmDelete(part.id));
+  }, [openDeleteModal, onConfirmDelete]);
 
   const ModalsComponent: React.FC = useCallback(() => (
     <>
       <ConfirmationModal
         isOpen={isDeleteModalOpen}
         onClose={closeDeleteModal}
-        onConfirm={handleConfirmDelete}
+        onConfirm={confirmDelete}
         message={`「${partToDelete?.title}」を本当に削除しますか？`}
       />
-      <ConfirmationModal
+      <NotificationModal
         isOpen={isSuccessModalOpen}
         onClose={closeSuccessModal}
-        onConfirm={closeSuccessModal}
-        message="更新が完了しました。"
-        confirmLabel="OK"
-        showCancelButton={false}
-        confirmButtonColor="#4CAF50"
+        message={successMessage}
       />
     </>
-  ), [isDeleteModalOpen, closeDeleteModal, handleConfirmDelete, partToDelete, isSuccessModalOpen, closeSuccessModal]);
+  ), [isDeleteModalOpen, closeDeleteModal, confirmDelete, partToDelete, isSuccessModalOpen, closeSuccessModal, successMessage]);
 
   return {
-    openDeleteModal,
+    openDeleteModal: handleOpenDeleteModal,
     openSuccessModal,
     ModalsComponent,
   };

@@ -4,14 +4,23 @@ import { useEditPageModals } from './useEditPageModals';
 import { Part } from '../api/partsApi';
 import React from 'react';
 
-// ConfirmationModalのモックを改善
 vi.mock('../components/Modal/ConfirmationModal', () => ({
   __esModule: true,
   default: ({ isOpen, message, onConfirm }: { isOpen: boolean; message: string; onConfirm: () => void; }) =>
     isOpen
-      ? React.createElement('div', null, [
+      ? React.createElement('div', { "data-testid": "confirmation-modal" }, [
           React.createElement('p', { key: 'msg' }, message),
           React.createElement('button', { key: 'cfm', onClick: onConfirm }, 'Confirm'),
+        ])
+      : null,
+}));
+
+vi.mock('../components/Modal/NotificationModal', () => ({
+  __esModule: true,
+  default: ({ isOpen, message }: { isOpen: boolean; message: string; }) =>
+    isOpen
+      ? React.createElement('div', { "data-testid": "notification-modal" }, [
+          React.createElement('p', { key: 'msg' }, message),
         ])
       : null,
 }));
@@ -34,7 +43,8 @@ describe('useEditPageModals', () => {
     });
 
     const { ModalsComponent } = result.current;
-    const { getByText } = render(React.createElement(ModalsComponent));
+    const { getByText, getByTestId } = render(React.createElement(ModalsComponent));
+    expect(getByTestId('confirmation-modal')).toBeDefined();
     expect(getByText('「Test Part」を本当に削除しますか？')).toBeDefined();
   });
 
@@ -42,11 +52,12 @@ describe('useEditPageModals', () => {
     const { result } = renderHook(() => useEditPageModals({ onConfirmDelete: vi.fn() }));
     
     act(() => {
-      result.current.openSuccessModal();
+      result.current.openSuccessModal('更新が完了しました。');
     });
 
     const { ModalsComponent } = result.current;
-    const { getByText } = render(React.createElement(ModalsComponent));
+    const { getByText, getByTestId } = render(React.createElement(ModalsComponent));
+    expect(getByTestId('notification-modal')).toBeDefined();
     expect(getByText('更新が完了しました。')).toBeDefined();
   });
 

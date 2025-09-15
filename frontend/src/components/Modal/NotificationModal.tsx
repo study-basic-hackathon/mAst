@@ -1,23 +1,17 @@
 import React from 'react';
 
-interface ConfirmationModalProps {
+interface NotificationModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: () => void;
   message: string;
   confirmLabel?: string;
-  cancelLabel?: string;
-  confirmButtonColor?: string;
 }
 
-const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
+const NotificationModal: React.FC<NotificationModalProps> = ({
   isOpen,
   onClose,
-  onConfirm,
   message,
-  confirmLabel = 'はい',
-  cancelLabel = 'いいえ',
-  confirmButtonColor = '#ff6464',
+  confirmLabel = 'OK',
 }) => {
   if (!isOpen) {
     return null;
@@ -61,13 +55,8 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
 
   const confirmButtonStyle: React.CSSProperties = {
     ...buttonStyle,
-    backgroundColor: confirmButtonColor,
+    backgroundColor: '#007bff',
     color: 'white',
-  };
-
-  const cancelButtonStyle: React.CSSProperties = {
-    ...buttonStyle,
-    backgroundColor: '#ccc',
   };
 
   return (
@@ -75,12 +64,11 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
       <div style={contentStyle} onClick={(e) => e.stopPropagation()}>
         <p style={{ fontSize: '18px', margin: 0 }}>{message}</p>
         <div style={buttonContainerStyle}>
-          <button style={cancelButtonStyle} onClick={onClose}>{cancelLabel}</button>
-          <button style={confirmButtonStyle} onClick={onConfirm}>{confirmLabel}</button>
+          <button style={confirmButtonStyle} onClick={onClose}>{confirmLabel}</button>
         </div>
       </div>
     </div>
   );
 };
 
-export default ConfirmationModal;
+export default NotificationModal;
