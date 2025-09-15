@@ -1,3 +1,5 @@
+import os
+
 def test_get_parts_data_success(client, mock_db_connection):
     # 準備
     mock_cursor = mock_db_connection.cursor.return_value
@@ -73,3 +75,52 @@ def test_create_part_success(client, mock_db_connection):
     assert response_data["quantity"] == int(new_part_data["quantity"])
     # crud.createのモックの戻り値に基づいて検証を調整
     assert response_data["category"] == mock_created_part["category"]
+
+
+def test_upload_part_image_success(client, mock_db_connection, monkeypatch):
+    # 準備
+    part_id = 1
+    file_content = b"test image content"
+    file_name = "test_image.jpg"
+
+    # crud.parts.update_image_url が呼び出されることを確認するためのモック
+    mock_update_image_url = lambda db, p_id, url: None
+    monkeypatch.setattr("crud.parts.update_image_url", mock_update_image_url)
+
+    # ファイル保存関連のos/shutil関数をモック
+    original_join = os.path.join
+    def mock_join(*args):
+        if args[0] == "static" and args[1] == "images":
+            return "/tmp/static/images"
+        return original_join(*args)
+    monkeypatch.setattr("os.path.join", mock_join)
+    monkeypatch.setattr("os.makedirs", lambda *args, **kwargs: None)
+    monkeypatch.setattr("shutil.copyfileobj", lambda src, dest: None)
+    # `open`をモックして、ファイル書き込みをシミュレート
+    from unittest.mock import mock_open
+    monkeypatch.setattr("builtins.open", mock_open())
+
+    # 実行
+    with open(file_name, "wb") as f:
+        f.write(file_content)
+    
+    with open(file_name, "rb") as f:
+        response = client.post(
+            f"/parts/{part_id}/image",
+            files={"file": (file_name, f, "image/jpeg")}
+        )
+
+    # 後片付け
+    # os.remove(file_name) # openをモックしているので、物理ファイルは作成されない
+
+    # 検証
+    assert response.status_code == 200
+    # レスポンスの image_url は固定のファイル名に基づいていることを確認
+    expected_url = f"/static/images/{part_id}.jpg"
+    response_data = response.json()
+    assert response_data["message"] == "Image uploaded successfully"
+    assert response_data["parts_id"] == part_id
+    # APIの実装に合わせて、ファイル名が part_id に基づいていることを確認
+    file_extension = os.path.splitext(file_name)[1]
+    expected_file_name = f"{part_id}{file_extension}"
+    assert expected_file_name in response_data["image_url"]
