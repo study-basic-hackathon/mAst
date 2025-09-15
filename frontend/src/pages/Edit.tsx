@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { useBlocker } from 'react-router-dom';
 import PartCardList from '../components/page_components/Edit/PartCardList';
 import EditPageActions from '../components/page_components/Edit/EditPageActions';
 import { usePartsManager } from '../hooks/usePartsManager';
@@ -25,10 +26,21 @@ const Edit: React.FC = () => {
   const {
     openDeleteModal,
     openSuccessModal,
+    openUnsavedChangesModal,
     ModalsComponent,
   } = useEditPageModals({
     onConfirmDelete: handleDelete,
   });
+
+  const blocker = useBlocker(hasChanges);
+
+  useEffect(() => {
+    if (blocker.state === 'blocked') {
+      openUnsavedChangesModal(() => {
+        blocker.proceed?.();
+      });
+    }
+  }, [blocker, openUnsavedChangesModal]);
 
   useEffect(() => {
     if (isUpdateSuccessful) {

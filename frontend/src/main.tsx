@@ -1,7 +1,8 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App'
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import { RouterProvider } from 'react-router-dom';
+import './index.css';
+import { router } from './Route'; // 作成したルーターをインポート
 
 let root = document.getElementById('root');
 if (!root) {
@@ -12,6 +13,6 @@ if (!root) {
 
 createRoot(root).render(
   <StrictMode>
-    <App />
+    <RouterProvider router={router} />
   </StrictMode>,
-)
+);

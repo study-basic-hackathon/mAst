@@ -5,7 +5,7 @@ export const useConfirmationModal = <T>() => {
   const [itemToProcess, setItemToProcess] = useState<T | null>(null);
   const [onConfirmAction, setOnConfirmAction] = useState<(() => void) | null>(null);
 
-  const openModal = useCallback((item: T, onConfirm: () => void) => {
+  const openModal = useCallback((item: T | null, onConfirm: () => void) => {
     setItemToProcess(item);
     setOnConfirmAction(() => onConfirm);
     setIsModalOpen(true);

@@ -64,4 +64,16 @@ describe('useConfirmationModal フック', () => {
 
     expect(mockAction).not.toHaveBeenCalled();
   });
+
+  it('itemがnullでもモーダルが開き、アクションがセットされるべき', () => {
+    const { result } = renderHook(() => useConfirmationModal<null>());
+    const mockAction = vi.fn();
+
+    act(() => {
+      result.current.openModal(null, mockAction);
+    });
+
+    expect(result.current.isModalOpen).toBe(true);
+    expect(result.current.itemToProcess).toBe(null);
+  });
 });

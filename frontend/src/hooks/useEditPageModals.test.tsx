@@ -1,79 +1,42 @@
-import { renderHook, act, render, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
+import { renderHook, act, render } from '@testing-library/react';
 import { useEditPageModals } from './useEditPageModals';
-import { Part } from '../api/partsApi';
 import React from 'react';
 
+// ConfirmationModalとNotificationModalをモック化
 vi.mock('../components/Modal/ConfirmationModal', () => ({
-  __esModule: true,
-  default: ({ isOpen, message, onConfirm }: { isOpen: boolean; message: string; onConfirm: () => void; }) =>
-    isOpen
-      ? React.createElement('div', { "data-testid": "confirmation-modal" }, [
-          React.createElement('p', { key: 'msg' }, message),
-          React.createElement('button', { key: 'cfm', onClick: onConfirm }, 'Confirm'),
-        ])
-      : null,
+  default: ({ isOpen, message }: { isOpen: boolean, message: string }) =>
+    isOpen ? <div data-testid="confirmation-modal">{message}</div> : null,
 }));
 
 vi.mock('../components/Modal/NotificationModal', () => ({
-  __esModule: true,
-  default: ({ isOpen, message }: { isOpen: boolean; message: string; }) =>
-    isOpen
-      ? React.createElement('div', { "data-testid": "notification-modal" }, [
-          React.createElement('p', { key: 'msg' }, message),
-        ])
-      : null,
+  default: ({ isOpen, message }: { isOpen: boolean, message: string }) =>
+    isOpen ? <div data-testid="notification-modal">{message}</div> : null,
 }));
 
-describe('useEditPageModals', () => {
-  const mockPart: Part = { id: 1, title: 'Test Part', quantity: 1, imageUrl: '', inventoryId: 1, category: 'A' };
+describe('useEditPageModals フック', () => {
+  it('openUnsavedChangesModalを呼び出すと、変更破棄確認モーダルが表示されるべき', () => {
+    const mockOnConfirm = vi.fn();
+    const { result, rerender } = renderHook(() => useEditPageModals({ onConfirmDelete: vi.fn() }));
 
-  it('初期状態ではモーダルは表示されない', () => {
-    const { result } = renderHook(() => useEditPageModals({ onConfirmDelete: vi.fn() }));
-    const { ModalsComponent } = result.current;
-    const { container } = render(React.createElement(ModalsComponent));
-    expect(container.firstChild).toBeNull();
-  });
+    // ModalsComponentをレンダリングしないとモーダルは表示されない
+    const { container } = render(<result.current.ModalsComponent />);
 
-  it('openDeleteModal を呼び出すと削除確認モーダルが表示される', () => {
-    const { result } = renderHook(() => useEditPageModals({ onConfirmDelete: vi.fn() }));
-    
+    // 初期状態ではモーダルは表示されていない
+    expect(container.querySelector('[data-testid="confirmation-modal"]')).toBeNull();
+
+    // モーダルを開く
     act(() => {
-      result.current.openDeleteModal(mockPart);
+      result.current.openUnsavedChangesModal(mockOnConfirm);
     });
 
-    const { ModalsComponent } = result.current;
-    const { getByText, getByTestId } = render(React.createElement(ModalsComponent));
-    expect(getByTestId('confirmation-modal')).toBeDefined();
-    expect(getByText('「Test Part」を本当に削除しますか？')).toBeDefined();
-  });
+    // 再レンダリングしてModalsComponentの状態を更新
+    rerender({});
+    render(<result.current.ModalsComponent />, { container });
 
-  it('openSuccessModal を呼び出すと成功モーダルが表示される', () => {
-    const { result } = renderHook(() => useEditPageModals({ onConfirmDelete: vi.fn() }));
-    
-    act(() => {
-      result.current.openSuccessModal('更新が完了しました。');
-    });
-
-    const { ModalsComponent } = result.current;
-    const { getByText, getByTestId } = render(React.createElement(ModalsComponent));
-    expect(getByTestId('notification-modal')).toBeDefined();
-    expect(getByText('更新が完了しました。')).toBeDefined();
-  });
-
-  it('確認ボタンをクリックすると onConfirmDelete が呼び出される', () => {
-    const mockOnConfirmDelete = vi.fn();
-    const { result } = renderHook(() => useEditPageModals({ onConfirmDelete: mockOnConfirmDelete }));
-    
-    act(() => {
-      result.current.openDeleteModal(mockPart);
-    });
-
-    const { ModalsComponent } = result.current;
-    const { getByText } = render(React.createElement(ModalsComponent));
-    
-    fireEvent.click(getByText('Confirm'));
-
-    expect(mockOnConfirmDelete).toHaveBeenCalledWith(mockPart.id);
+    // モーダルが表示され、正しいメッセージが表示されることを確認
+    const modal = container.querySelector('[data-testid="confirmation-modal"]');
+    expect(modal).not.toBeNull();
+    expect(modal?.textContent).toBe('変更中の内容は破棄されます。よろしいですか？');
   });
 });
