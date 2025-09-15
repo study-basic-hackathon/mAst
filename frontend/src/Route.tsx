@@ -11,8 +11,8 @@ const RouteConf = {
     settings: { path: '/Settings', element: <div>Settings Page</div> },
 };
 
-export const GetLink = (key: string) => {
-    return RouteConf[key as keyof typeof RouteConf]?.path;
+export const GetLink = (key: keyof typeof RouteConf) => {
+    return RouteConf[key]?.path;
 }
 
 export const RouteComponent: React.FC = () => {
