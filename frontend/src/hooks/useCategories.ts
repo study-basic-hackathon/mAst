@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { fetchCategories as fetchCategoriesApi } from '../api/categoriesApi';
 
 export interface Category {
   id: number;
@@ -9,14 +10,10 @@ export const useCategories = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchCategories = useCallback(async () => {
+  const loadCategories = useCallback(async () => {
     try {
       setError(null);
-      const response = await fetch('/api/categories');
-      if (!response.ok) {
-        throw new Error('カテゴリーの取得に失敗しました。');
-      }
-      const data = await response.json();
+      const data = await fetchCategoriesApi();
       setCategories(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : '不明なエラーが発生しました。');
@@ -24,8 +21,8 @@ export const useCategories = () => {
   }, []);
 
   useEffect(() => {
-    fetchCategories();
-  }, [fetchCategories]);
+    loadCategories();
+  }, [loadCategories]);
 
   return { categories, error };
 };
