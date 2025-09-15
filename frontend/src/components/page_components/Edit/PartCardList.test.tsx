@@ -15,7 +15,7 @@ describe('PartCardList', () => {
     { id: 2, inventoryId: 102, title: 'Part 2', category: 'Category B', quantity: 5, imageUrl: 'url2' },
   ];
 
-  it('renders a button to add a new part', () => {
+  it('新しい部品を追加するボタンを描画する', () => {
     render(
       <PartCardList
         parts={mockParts}
@@ -31,7 +31,7 @@ describe('PartCardList', () => {
     expect(addButton).toBeInTheDocument();
   });
 
-  it('shows CardCreator when add button is clicked', () => {
+  it('追加ボタンをクリックするとCardCreatorを表示する', () => {
     render(
       <PartCardList
         parts={mockParts}

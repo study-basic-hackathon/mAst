@@ -14,7 +14,7 @@ describe('usePartsManager', () => {
     vi.restoreAllMocks();
   });
 
-  it('should create a new part successfully', async () => {
+  it('新しい部品を正常に作成する', async () => {
     const mockCreatedPart: partsApi.Part = { id: 1, inventoryId: 101, title: 'New Part', category: 'Category A', quantity: 10, imageUrl: '' };
     
     vi.mocked(partsApi.createPart).mockResolvedValue(mockCreatedPart);
