@@ -2,8 +2,8 @@ import React, { useState } from 'react'
 import { FaImage } from "react-icons/fa";
 
 export interface CardBaseProps {
-  title: string;
-  category: string;
+  title: React.ReactNode;
+  category: React.ReactNode;
   imageUrl?: string;
   onImageClick?: () => void;
 };
@@ -13,7 +13,7 @@ interface NeedContentChildren {
   children: React.ReactNode;
 };
 
-const CardBase : React.FC<CardBaseProps & NeedContentChildren> = ({title='', category='', imageUrl='', onImageClick, children}) => {
+const CardBase : React.FC<CardBaseProps & NeedContentChildren> = ({title, category, imageUrl='', onImageClick, children}) => {
     const [hasError, setHasError] = useState(false);
 
     const handleError = () => {
@@ -42,8 +42,8 @@ const CardBase : React.FC<CardBaseProps & NeedContentChildren> = ({title='', cat
                 </div>
 
                 <div className='cardText' style={{flexGrow:1, display:'flex', flexDirection:'column', justifyContent:'center', padding:'5px 10px'}}>
-                    <p style={{fontSize:'23px', fontWeight:'bold', margin:0, lineHeight:'1.2'}}>{title}</p>
-                    <p style={{fontSize:'16px', margin:0, lineHeight:'1.2'}}>{category}</p>
+                    <div style={{fontSize:'23px', fontWeight:'bold', margin:0, lineHeight:'1.2'}}>{title}</div>
+                    <div style={{fontSize:'16px', margin:0, lineHeight:'1.2'}}>{category}</div>
                 </div>
 
                 <div className='cardContent' style={{alignItems:'flex-end', width:'30%'}}>
