@@ -17,6 +17,7 @@ def get_all(db: mysql.connector.MySQLConnection):
     cursor.execute(query)
     result = cursor.fetchall()
     cursor.close()
+    db.commit()
     return result
 
 def delete_by_id(db: mysql.connector.MySQLConnection, part_id: int):
