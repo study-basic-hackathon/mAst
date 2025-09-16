@@ -41,9 +41,9 @@ services:
     restart: always
     environment:
       # MySQLのrootパスワードを設定
-      MYSQL_ROOT_PASSWORD: mast2509
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       # デフォルトデータベースを設定
-      MYSQL_DATABASE: mast
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
     # MySQLのポートを外部に公開する場合
     ports:
       - "3306:3306"
