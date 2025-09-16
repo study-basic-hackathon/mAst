@@ -1,13 +1,13 @@
 import { renderHook, act, waitFor } from '@testing-library/react';
 import { vi } from 'vitest';
-import * as partsApi from '../api/partsApi';
-import * as inventoryApi from '../api/inventoryApi';
-import { usePartsApi } from './usePartsApi';
-import { Part, NewPart } from '../api/partsApi';
+import * as partsApi from '@/api/partsApi';
+import * as inventoryApi from '@/api/inventoryApi';
+import { usePartsApi } from '@/hooks/usePartsApi';
+import { Part, NewPart } from '@/api/partsApi';
 
 // Mock the API modules
-vi.mock('../api/partsApi');
-vi.mock('../api/inventoryApi');
+vi.mock('@/api/partsApi');
+vi.mock('@/api/inventoryApi');
 
 const mockParts: Part[] = [
   { id: 1, title: 'Part 1', quantity: 10, imageUrl: 'url1', inventoryId: 101, category: 'Category A' },

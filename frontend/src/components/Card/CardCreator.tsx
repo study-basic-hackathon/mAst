@@ -1,10 +1,10 @@
 import React, { ChangeEvent } from 'react';
-import { useCategories } from '../../hooks/useCategories';
+import { useCategories } from '@/hooks/useCategories';
 import { CardBase } from './CardBase';
 import { FaCheckCircle } from "react-icons/fa";
 import { TfiClose } from 'react-icons/tfi';
-import CustomNumberUpDown from '../common/CustomNumberUpDown';
-import { usePartForm } from '../../hooks/usePartForm';
+import CustomNumberUpDown from '@/components/common/CustomNumberUpDown';
+import { usePartForm } from '@/hooks/usePartForm';
 
 // --- Props Interfaces ---
 

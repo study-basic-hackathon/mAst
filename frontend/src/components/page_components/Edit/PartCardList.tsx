@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import CardEditor from '../../Card/CardEditor';
-import CardCreator from '../../Card/CardCreator';
-import { Part } from '../../../hooks/usePartsManager';
+import CardEditor from '@/components/Card/CardEditor';
+import CardCreator from '@/components/Card/CardCreator';
+import { Part } from '@/hooks/usePartsManager';
 
 interface PartCardListProps {
   parts: Part[];

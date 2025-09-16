@@ -1,12 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter, useBlocker } from 'react-router-dom';
-import Edit from './Edit';
+import Edit from '@/pages/Edit';
 import React from 'react';
 
 // 依存フックをモック化
 const mockOpenUnsavedChangesModal = vi.fn();
-vi.mock('../hooks/usePartsManager', () => ({
+vi.mock('@/hooks/usePartsManager', () => ({
   usePartsManager: () => ({
     parts: [],
     initialParts: [],
@@ -23,13 +23,13 @@ vi.mock('../hooks/usePartsManager', () => ({
     resetUpdateStatus: vi.fn(),
   }),
 }));
-vi.mock('../hooks/useImageUploader', () => ({
+vi.mock('@/hooks/useImageUploader', () => ({
   useImageUploader: () => ({
     triggerFileDialog: vi.fn(),
     getInputProps: () => ({}),
   }),
 }));
-vi.mock('../hooks/useEditPageModals', () => ({
+vi.mock('@/hooks/useEditPageModals', () => ({
   useEditPageModals: () => ({
     openDeleteModal: vi.fn(),
     openSuccessModal: vi.fn(),

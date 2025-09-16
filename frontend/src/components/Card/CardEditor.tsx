@@ -1,7 +1,7 @@
 import React from 'react';
 import { CardBase, CardBaseProps } from './CardBase';
 import { FaMinusSquare } from "react-icons/fa";
-import CustomNumberUpDown from '../common/CustomNumberUpDown';
+import CustomNumberUpDown from '@/components/common/CustomNumberUpDown';
 
 // QuantitySelectorのProps
 interface QuantitySelectorProps {

@@ -2,11 +2,11 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import CardCreator from './CardCreator';
-import * as usePartForm from '../../hooks/usePartForm';
-import * as useCategories from '../../hooks/useCategories';
+import * as usePartForm from '@/hooks/usePartForm';
+import * as useCategories from '@/hooks/useCategories';
 
-vi.mock('../../hooks/usePartForm');
-vi.mock('../../hooks/useCategories');
+vi.mock('@/hooks/usePartForm');
+vi.mock('@/hooks/useCategories');
 
 describe('CardCreator', () => {
   const mockOnSave = vi.fn();

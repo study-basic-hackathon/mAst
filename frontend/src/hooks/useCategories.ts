@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { fetchCategories as fetchCategoriesApi } from '../api/categoriesApi';
+import { fetchCategories as fetchCategoriesApi } from '@/api/categoriesApi';
 
 export interface Category {
   id: number;

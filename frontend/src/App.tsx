@@ -1,6 +1,6 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
-import SideMenu from './components/SideMenu';
+import SideMenu from '@/components/SideMenu';
 
 function App() {
   return (

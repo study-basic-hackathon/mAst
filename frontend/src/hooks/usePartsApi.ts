@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
-import * as partsApi from '../api/partsApi';
-import * as inventoryApi from '../api/inventoryApi';
-import { Part, NewPart } from '../api/partsApi';
+import * as partsApi from '@/api/partsApi';
+import * as inventoryApi from '@/api/inventoryApi';
+import { Part, NewPart } from '@/api/partsApi';
 
 export const usePartsApi = () => {
   const [parts, setParts] = useState<Part[]>([]);

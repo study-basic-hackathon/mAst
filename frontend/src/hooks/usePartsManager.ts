@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
-import { Part } from '../api/partsApi';
-import { usePartsApi } from './usePartsApi';
-import { usePartsState } from './usePartsState';
+import { Part } from '@/api/partsApi';
+import { usePartsApi } from '@/hooks/usePartsApi';
+import { usePartsState } from '@/hooks/usePartsState';
 
 export type { Part };
 

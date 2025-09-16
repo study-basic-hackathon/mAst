@@ -1,9 +1,9 @@
 import React, { useCallback } from 'react';
-import { useConfirmationModal } from './useConfirmationModal';
-import { useNotificationModal } from './useNotificationModal';
-import ConfirmationModal from '../components/Modal/ConfirmationModal';
-import NotificationModal from '../components/Modal/NotificationModal';
-import { Part } from '../api/partsApi';
+import { useConfirmationModal } from '@/hooks/useConfirmationModal';
+import { useNotificationModal } from '@/hooks/useNotificationModal';
+import ConfirmationModal from '@/components/Modal/ConfirmationModal';
+import NotificationModal from '@/components/Modal/NotificationModal';
+import { Part } from '@/api/partsApi';
 
 interface UseEditPageModalsProps {
   onConfirmDelete: (partId: number) => void;

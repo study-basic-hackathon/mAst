@@ -1,10 +1,10 @@
 import { renderHook, waitFor } from '@testing-library/react';
 import { vi } from 'vitest';
 import { useCategories } from './useCategories';
-import * as categoriesApi from '../api/categoriesApi';
+import * as categoriesApi from '@/api/categoriesApi';
 
 // categoriesApi.ts の fetchCategories 関数をモック化
-vi.mock('../api/categoriesApi');
+vi.mock('@/api/categoriesApi');
 
 describe('useCategories', () => {
   it('カテゴリーが正常に取得できた場合、categoriesステートが更新されること', async () => {

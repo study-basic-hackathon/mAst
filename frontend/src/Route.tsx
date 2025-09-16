@@ -1,9 +1,9 @@
 import React from 'react';
 import { createBrowserRouter, RouteObject } from 'react-router-dom';
-import Home from './pages/Home';
-import Search from './pages/Search';
-import Edit from './pages/Edit';
-import App from './App'; // Appをレイアウトとしてインポート
+import Home from '@/pages/Home';
+import Search from '@/pages/Search';
+import Edit from '@/pages/Edit';
+import App from '@/App'; // Appをレイアウトとしてインポート
 
 const routeConfig = {
     home:     { path: '/',        element: <Home />                 },

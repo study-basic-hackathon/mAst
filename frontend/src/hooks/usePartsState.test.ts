@@ -1,7 +1,7 @@
 import { renderHook, act } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
 import { usePartsState } from './usePartsState';
-import { Part } from '../api/partsApi';
+import { Part } from '@/api/partsApi';
 
 const mockInitialParts: Part[] = [
   { id: 1, title: 'Part 1', quantity: 10, imageUrl: 'url1', inventoryId: 101, category: 'Category A' },

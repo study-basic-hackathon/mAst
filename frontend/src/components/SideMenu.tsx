@@ -4,7 +4,7 @@ import { FaSearch, FaPencilAlt } from 'react-icons/fa';
 import { VscSettingsGear } from 'react-icons/vsc';
 import { TfiMenu, TfiClose } from 'react-icons/tfi';
 import {Sidebar, Menu, MenuItem, SubMenu} from 'react-pro-sidebar';
-import { GetLink } from '../Route'
+import { GetLink } from '@/Route'
 
 const MenuItemList: any = {
     header: [

@@ -1,4 +1,4 @@
-import { Category } from '../hooks/useCategories';
+import { Category } from '@/hooks/useCategories';
 
 export const fetchCategories = async (): Promise<Category[]> => {
   const response = await fetch('/api/categories');

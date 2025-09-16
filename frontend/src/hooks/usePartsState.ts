@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { Part } from '../api/partsApi';
+import { Part } from '@/api/partsApi';
 
 export const usePartsState = (initialParts: Part[]) => {
   const [parts, setParts] = useState<Part[]>([]);

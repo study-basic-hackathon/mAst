@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { useImageUploader } from './useImageUploader';
+import { useImageUploader } from '@/hooks/useImageUploader';
 
 interface UsePartFormProps {
   onSave: (newPart: { title: string; categoryId: number; quantity: number; image?: File }) => void;
@@ -17,7 +17,9 @@ export const usePartForm = ({ onSave }: UsePartFormProps) => {
         setPreviewUrl(URL.createObjectURL(file));
     }, []);
 
-    const { triggerFileDialog, getInputProps } = useImageUploader(handleFileSelected);
+    const { triggerFileDialog, getInputProps } = useImageUploader<null>(
+        (file, _) => handleFileSelected(file)
+    );
 
     const handleSave = useCallback(() => {
         if (categoryId === '' || title.trim() === '') return;
@@ -36,7 +38,7 @@ export const usePartForm = ({ onSave }: UsePartFormProps) => {
         previewUrl,
         isSaveDisabled,
         handleSave,
-        triggerFileDialog,
+        triggerFileDialog: () => triggerFileDialog(null),
         getInputProps,
     };
 };

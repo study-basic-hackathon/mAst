@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
 import { useBlocker } from 'react-router-dom';
-import PartCardList from '../components/page_components/Edit/PartCardList';
-import EditPageActions from '../components/page_components/Edit/EditPageActions';
-import { usePartsManager } from '../hooks/usePartsManager';
-import { useImageUploader } from '../hooks/useImageUploader';
-import { useEditPageModals } from '../hooks/useEditPageModals';
+import PartCardList from '@/components/page_components/Edit/PartCardList';
+import EditPageActions from '@/components/page_components/Edit/EditPageActions';
+import { usePartsManager } from '@/hooks/usePartsManager';
+import { useImageUploader } from '@/hooks/useImageUploader';
+import { useEditPageModals } from '@/hooks/useEditPageModals';
 
 const Edit: React.FC = () => {
   const {

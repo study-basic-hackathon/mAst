@@ -2,7 +2,7 @@ import { renderHook, act, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { usePartsManager } from './usePartsManager';
 import { usePartsApi } from './usePartsApi';
-import { Part, NewPart } from '../api/partsApi';
+import { Part, NewPart } from '@/api/partsApi';
 
 vi.mock('./usePartsApi');
 
