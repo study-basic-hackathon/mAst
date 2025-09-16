@@ -7,8 +7,10 @@
 ```
 # .env_template
 # <>内の環境変数を設定する
-MYSQL_ROOT_PASSWORD=<DBルートパスワード>
+MYSQL_USER=<DBログインユーザ>
+MYSQL_PASSWORD=<DBユーザパスワード>
 MYSQL_DATABASE=<データベース名>
+MYSQL_ROOT_PASSWORD=<DBルートパスワード>
 ```
 
 ## 最小構成の動作環境構築
