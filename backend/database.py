@@ -1,4 +1,6 @@
 import os
+import sys
+import time
 import mysql.connector
 from mysql.connector import pooling
 from dotenv import load_dotenv
@@ -19,17 +21,31 @@ db_config = {
     "database": DB_NAME,
 }
 
-try:
-    # 接続プールを作成
-    cnx_pool = mysql.connector.pooling.MySQLConnectionPool(
-        pool_name="mast_pool",
-        pool_size=5,
-        **db_config
-    )
-    print("Database connection pool created successfully.")
-except mysql.connector.Error as e:
-    print(f"Error creating connection pool: {e}")
-    cnx_pool = None
+# 接続試行の最大回数と待機時間
+MAX_RETRIES = 5
+RETRY_DELAY = 5
+
+retries = 0
+cnx_pool = None
+while retries < MAX_RETRIES:
+    try:
+        # 接続プールを作成
+        cnx_pool = mysql.connector.pooling.MySQLConnectionPool(
+            pool_name="mast_pool",
+            pool_size=5,
+            **db_config
+        )
+        print("Database connection pool created successfully.")
+        break  # 成功したらループを抜ける
+    except mysql.connector.Error as e:
+        retries += 1
+        print(f"Error creating connection pool: {e}")
+        if retries < MAX_RETRIES:
+            print(f"Retrying in {RETRY_DELAY} seconds... ({retries}/{MAX_RETRIES})")
+            time.sleep(RETRY_DELAY)
+        else:
+            print("Failed to create connection pool after multiple retries.")
+            sys.exit(1) # アプリケーションを終了
 
 # データベース接続を取得するための依存関係
 def get_db_connection():
