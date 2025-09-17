@@ -1,6 +1,11 @@
 # Pythonの依存関係
-fastapi==0.101.1
+fastapi
 uvicorn==0.23.2
 python-dotenv==1.0.0
 # MySQLとの接続に必要
 mysql-connector-python==8.0.33
+# 画像アップロードに必要
+python-multipart==0.0.9
+pytest
+httpx==0.24.1
+starlette

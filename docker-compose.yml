@@ -4,8 +4,17 @@ services:
     container_name: react_frontend
     build:
       context: ./frontend
-      dockerfile: ./docker/Dockerfile
+      dockerfile: ./docker/Dockerfile.dev
     restart: always
+    environment:
+      # DB接続先ホスト名
+      MYSQL_HOST: db
+      # DBログインユーザ名
+      MYSQL_USER: ${MYSQL_DATABASE}
+      # DBログインユーザパスワードを設定
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      # DB接続先データベースを設定
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
     volumes:
       # ホストのコードをコンテナにマウント（開発用）
       - ./frontend:/app
@@ -22,7 +31,7 @@ services:
     container_name: fastapi_backend
     build:
       context: ./backend
-      dockerfile: ./docker/Dockerfile
+      dockerfile: ./docker/Dockerfile.dev
     restart: always
     volumes:
       # ホストのコードをコンテナにマウント
@@ -43,9 +52,13 @@ services:
     restart: always
     environment:
       # MySQLのrootパスワードを設定
-      MYSQL_ROOT_PASSWORD: mast2509
-      # デフォルトデータベースを設定
-      MYSQL_DATABASE: mast
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      # MySQLのデフォルトデータベースを設定
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      # MySQLの一般ユーザ名を設定
+      MYSQL_USER: ${MYSQL_USER}
+      # MySQLの一般ユーザパスワードを設定
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     # MySQLのポートを外部に公開する場合
     ports:
       - "3306:3306"
@@ -53,7 +66,7 @@ services:
       # データベースのデータを永続化
       - db_data:/var/lib/mysql
       # 起動時に実行される初期化SQLスクリプトをマウント
-      - ./database/initdb.sql:/docker-entrypoint-initdb.d/initdb.sql
+      - ./database/:/docker-entrypoint-initdb.d/
 
 # 永続化のためのボリュームを定義
 volumes:

@@ -1,0 +1,23 @@
+services:
+  # Reactフロントエンドテストサービス
+  frontend-test:
+    container_name: react_frontend_test
+    build:
+      context: ./frontend
+      dockerfile: ./docker/Dockerfile.dev
+    volumes:
+      # ホストのコードをコンテナにマウント（開発用）
+      - ./frontend:/app
+      - /app/node_modules
+    command: npm run test
+
+  # FastAPIバックエンドテストサービス
+  backend-test:
+    container_name: fastapi_backend_test
+    build:
+      context: ./backend
+      dockerfile: ./docker/Dockerfile.dev
+    volumes:
+      # ホストのコードをコンテナにマウント
+      - ./backend:/app
+    command: pytest

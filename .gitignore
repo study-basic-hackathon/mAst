@@ -1,7 +1,9 @@
 # backend
 __pycache__*
+.pytest_cache*
 *.pyc
 *.toml
+static*
 
 # frontend
 # Logs
@@ -28,3 +30,5 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+.clinerules*
+.env
