@@ -1,22 +1,55 @@
-# React + Vite
+# mAst フロントエンド
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+このリポジトリは、電子部品管理アプリケーション「mAst」のフロントエンド部分です。
+React, TypeScript, Vite を使用して構築されています。
 
-Currently, two official plugins are available:
+## 主な技術スタック
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+-   React
+-   TypeScript
+-   Vite
+-   React Router
+-   Vitest
+-   React Testing Library
 
-## Expanding the ESLint configuration
+## ディレクトリ構成
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
-
-# ディレクトリ構成
 ```
 .
 ├─docker : フロントエンド動作環境のDockerファイル
-├─public : 画像ファイルなど
-└─src    : ソースファイル
-    ├─components : 各UI部品・コンポーネント
-    └─pages      : 各ページ
+└─src    : ソースコード
+    ├─api      : バックエンドAPIとの通信ロジック
+    ├─components : 汎用的なUIコンポーネント
+    │  ├─Card   : 部品情報を表示・編集・作成するカードUI
+    │  ├─common : アプリケーション全体で使われる共通コンポーネント
+    │  └─Modal  : 確認・通知用のモーダルウィンドウ
+    ├─hooks    : 状態管理やビジネスロジックをカプセル化したカスタムフック
+    ├─pages    : 各ページのコンポーネント
+    └─test     : テスト全体の設定ファイル
+```
+
+## 開発環境の起動
+
+1.  リポジトリのルートディレクトリでDockerコンテナを起動します。
+    ```bash
+    docker-compose up -d --build
+    ```
+
+2.  `frontend` ディレクトリに移動し、依存関係をインストールします。
+    ```bash
+    cd frontend
+    npm install
+    ```
+
+3.  開発サーバーを起動します。
+    ```bash
+    npm run dev
+    ```
+
+## テストの実行
+
+`frontend` ディレクトリ内で以下のコマンドを実行します。
+
+```bash
+npm test
 ```
