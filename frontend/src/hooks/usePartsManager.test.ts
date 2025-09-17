@@ -1,10 +1,12 @@
 import { renderHook, act, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { usePartsManager } from './usePartsManager';
-import { usePartsApi } from './usePartsApi';
+import { usePartsQuery } from './usePartsQuery';
+import { usePartsCommand } from './usePartsCommand';
 import { Part, NewPart } from '@/api/partsApi';
 
-vi.mock('./usePartsApi');
+vi.mock('./usePartsQuery');
+vi.mock('./usePartsCommand');
 
 const mockInitialParts: Part[] = [
   { id: 1, title: 'Part 1', quantity: 10, imageUrl: 'url1', inventoryId: 101, category: 'Category A' },
@@ -18,14 +20,18 @@ describe('usePartsManager', () => {
   const mockResetUpdateStatus = vi.fn();
 
   // モックの基本値を定義
-  const baseMockUsePartsApi = {
+  const baseMockUsePartsQuery = {
     parts: mockInitialParts,
     isLoading: false,
-    isUpdating: false,
     error: null,
     reload: mockReload,
-    createPart: mockCreatePart,
+  };
+
+  const baseMockUsePartsCommand = {
+    isUpdating: false,
+    error: null,
     deletePart: mockDeletePart,
+    createPart: mockCreatePart,
     updateParts: mockUpdateParts,
     isUpdateSuccessful: false,
     resetUpdateStatus: mockResetUpdateStatus,
@@ -33,7 +39,8 @@ describe('usePartsManager', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(usePartsApi).mockReturnValue(baseMockUsePartsApi);
+    vi.mocked(usePartsQuery).mockReturnValue(baseMockUsePartsQuery);
+    vi.mocked(usePartsCommand).mockReturnValue(baseMockUsePartsCommand);
   });
 
   it('初期状態で正しく部品が設定される', async () => {
@@ -45,7 +52,7 @@ describe('usePartsManager', () => {
     });
   });
 
-  it('handleSaveNewPart が usePartsApi の createPart を呼び出す', async () => {
+  it('handleSaveNewPart が usePartsCommand の createPart を呼び出す', async () => {
     const { result } = renderHook(() => usePartsManager());
     const newPart: NewPart = { title: 'New Part', categoryId: 1, quantity: 5 };
 
@@ -56,7 +63,7 @@ describe('usePartsManager', () => {
     expect(mockCreatePart).toHaveBeenCalledWith(newPart);
   });
 
-  it('handleDelete が usePartsApi の deletePart を呼び出す', async () => {
+  it('handleDelete が usePartsCommand の deletePart を呼び出す', async () => {
     const { result } = renderHook(() => usePartsManager());
 
     await act(async () => {
@@ -103,9 +110,8 @@ describe('usePartsManager', () => {
 
   it('更新成功状態とリセット関数を正しく返す', () => {
     // isUpdateSuccessfulがtrueの場合をテストするためにモックを上書き
-    // 再レンダリングで値がリセットされないよう、mockReturnValue を使用する
-    vi.mocked(usePartsApi).mockReturnValue({
-      ...baseMockUsePartsApi,
+    vi.mocked(usePartsCommand).mockReturnValue({
+      ...baseMockUsePartsCommand,
       isUpdateSuccessful: true,
     });
 

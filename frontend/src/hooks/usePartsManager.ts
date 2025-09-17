@@ -1,7 +1,8 @@
 import { useCallback } from 'react';
 import { Part } from '@/api/partsApi';
-import { usePartsApi } from '@/hooks/usePartsApi';
 import { usePartsState } from '@/hooks/usePartsState';
+import { usePartsQuery } from './usePartsQuery';
+import { usePartsCommand } from './usePartsCommand';
 
 export type { Part };
 
@@ -9,14 +10,18 @@ export const usePartsManager = () => {
   const {
     parts: initialParts,
     isLoading,
+    error: queryError,
+    reload,
+  } = usePartsQuery();
+  const {
     isUpdating,
-    error,
+    error: commandError,
     deletePart,
     createPart,
     updateParts,
     isUpdateSuccessful,
     resetUpdateStatus,
-  } = usePartsApi();
+  } = usePartsCommand(reload);
 
   const {
     parts,
@@ -49,7 +54,7 @@ export const usePartsManager = () => {
     initialParts,
     isLoading,
     isUpdating,
-    error,
+    error: queryError || commandError,
     hasChanges,
     handleQuantityChange,
     stageImageChange,
