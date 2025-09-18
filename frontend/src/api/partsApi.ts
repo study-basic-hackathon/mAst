@@ -22,8 +22,20 @@ const handleApiResponse = async (response: Response) => {
   return response.json();
 };
 
-export const fetchParts = async (): Promise<Part[]> => {
-  const response = await fetch('/api/parts');
+export interface SearchCriteria {
+  name?: string;
+  categoryId?: number;
+}
+
+export const fetchParts = async (criteria?: SearchCriteria): Promise<Part[]> => {
+  const url = new URL('/api/parts', window.location.origin);
+  if (criteria?.name) {
+    url.searchParams.append('name', criteria.name);
+  }
+  if (criteria?.categoryId) {
+    url.searchParams.append('category_id', criteria.categoryId.toString());
+  }
+  const response = await fetch(url.toString());
   return handleApiResponse(response);
 };
 

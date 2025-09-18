@@ -1,6 +1,8 @@
 import React from "react";
 import CardView from "@/components/Card/CardView";
 import { usePartsQuery } from '@/hooks/usePartsQuery';
+import { useCategories } from "@/hooks/useCategories";
+import SearchForm from "@/components/common/SearchForm";
 
 const Search: React.FC = () => {
     const {
@@ -8,56 +10,15 @@ const Search: React.FC = () => {
         isLoading,
         error,
         reload,
+        search,
     } = usePartsQuery();
+    const { categories } = useCategories();
 
     return (
         <>
             <h1>検索・一覧画面</h1>
             
-            {/* 検索フォーム（将来の機能） */}
-            <div style={{ marginBottom: '20px', display: 'flex', gap: '10px', alignItems: 'flex-end' }}>
-                <div>
-                    <label>部品名</label>
-                    <input 
-                        type="text" 
-                        placeholder="部品名で検索" 
-                        style={{ 
-                            padding: '8px', 
-                            marginLeft: '10px',
-                            border: '1px solid #ccc',
-                            borderRadius: '4px'
-                        }}
-                        disabled // 将来の機能として無効化
-                    />
-                </div>
-                <div>
-                    <label>カテゴリ</label>
-                    <select 
-                        style={{ 
-                            padding: '8px', 
-                            marginLeft: '10px',
-                            border: '1px solid #ccc',
-                            borderRadius: '4px'
-                        }}
-                        disabled // 将来の機能として無効化
-                    >
-                        <option>すべて</option>
-                    </select>
-                </div>
-                <button 
-                    style={{ 
-                        padding: '8px 16px',
-                        backgroundColor: '#22c55e',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '4px',
-                        cursor: 'pointer'
-                    }}
-                    disabled // 将来の機能として無効化
-                >
-                    検索
-                </button>
-            </div>
+            <SearchForm categories={categories} onSearch={search} />
 
             {/* ローディング表示 */}
             {isLoading && (

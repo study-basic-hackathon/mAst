@@ -1,6 +1,7 @@
+from typing import Optional
 import mysql.connector
 
-def get_all(db: mysql.connector.MySQLConnection):
+def get_all(db: mysql.connector.MySQLConnection, name: Optional[str] = None, category_id: Optional[int] = None):
     query = """
         SELECT
             p.id,
@@ -13,8 +14,22 @@ def get_all(db: mysql.connector.MySQLConnection):
         JOIN Inventory i ON p.id = i.parts_id
         JOIN Category c ON p.c_id = c.id
     """
+    params = []
+    where_clauses = []
+
+    if name:
+        where_clauses.append("p.p_name LIKE %s")
+        params.append(f"%{name}%")
+    
+    if category_id is not None:
+        where_clauses.append("p.c_id = %s")
+        params.append(category_id)
+
+    if where_clauses:
+        query += " WHERE " + " AND ".join(where_clauses)
+
     cursor = db.cursor(dictionary=True)
-    cursor.execute(query)
+    cursor.execute(query, tuple(params))
     result = cursor.fetchall()
     cursor.close()
     db.commit()
