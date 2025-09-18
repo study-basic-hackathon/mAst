@@ -6,7 +6,7 @@ import React from 'react';
 
 // 依存フックをモック化
 const mockOpenUnsavedChangesModal = vi.fn();
-vi.mock('@/hooks/usePartsManager', () => ({
+vi.mock('@/hooks/parts/usePartsManager', () => ({
   usePartsManager: () => ({
     parts: [],
     initialParts: [],
@@ -23,13 +23,13 @@ vi.mock('@/hooks/usePartsManager', () => ({
     resetUpdateStatus: vi.fn(),
   }),
 }));
-vi.mock('@/hooks/useImageUploader', () => ({
+vi.mock('@/hooks/ui/useImageUploader', () => ({
   useImageUploader: () => ({
     triggerFileDialog: vi.fn(),
     getInputProps: () => ({}),
   }),
 }));
-vi.mock('@/hooks/useEditPageModals', () => ({
+vi.mock('@/hooks/ui/useEditPageModals', () => ({
   useEditPageModals: () => ({
     openDeleteModal: vi.fn(),
     openSuccessModal: vi.fn(),

@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { Part } from '@/api/partsApi';
-import { usePartsState } from '@/hooks/usePartsState';
+import { usePartsState } from '@/hooks/parts/usePartsState';
 import { usePartsQuery } from './usePartsQuery';
 import { usePartsCommand } from './usePartsCommand';
 

@@ -4,7 +4,7 @@ import { CardBase } from './CardBase';
 import { FaCheckCircle } from "react-icons/fa";
 import { TfiClose } from 'react-icons/tfi';
 import CustomNumberUpDown from '@/components/common/CustomNumberUpDown';
-import { usePartForm } from '@/hooks/usePartForm';
+import { usePartForm } from '@/hooks/parts/usePartForm';
 
 // --- Props Interfaces ---
 

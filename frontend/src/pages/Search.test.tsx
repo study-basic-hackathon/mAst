@@ -2,12 +2,12 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, vi, expect, beforeEach } from 'vitest';
 import Search from './Search';
-import { usePartsQuery } from '@/hooks/usePartsQuery';
+import { usePartsQuery } from '@/hooks/parts/usePartsQuery';
 import { Part } from '@/api/partsApi';
 import { useCategories, Category } from '@/hooks/useCategories';
 
 // フックをモック化
-vi.mock('@/hooks/usePartsQuery');
+vi.mock('@/hooks/parts/usePartsQuery');
 vi.mock('@/hooks/useCategories');
 
 const mockUsePartsQuery = vi.mocked(usePartsQuery);

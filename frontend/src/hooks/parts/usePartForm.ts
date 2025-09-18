@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { useImageUploader } from '@/hooks/useImageUploader';
+import { useImageUploader } from '@/hooks/ui/useImageUploader';
 
 interface UsePartFormProps {
   onSave: (newPart: { title: string; categoryId: number; quantity: number; image?: File }) => void;
