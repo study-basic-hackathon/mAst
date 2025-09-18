@@ -1,16 +1,16 @@
 import { useState, useCallback } from 'react';
 import { useImageUploader } from '@/hooks/ui/useImageUploader';
 
-interface UsePartFormProps {
+interface UsePartCreatorProps {
   onSave: (newPart: { title: string; categoryId: number; quantity: number; image?: File }) => void;
 }
 
-export const usePartForm = ({ onSave }: UsePartFormProps) => {
+export const usePartCreator = ({ onSave }: UsePartCreatorProps) => {
     const [title, setTitle] = useState('');
     const [categoryId, setCategoryId] = useState<number | ''>('');
     const [quantity, setQuantity] = useState(0);
     const [image, setImage] = useState<File | undefined>(undefined);
-    const [previewUrl, setPreviewUrl] = useState<string | undefined>(undefined);
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
     const handleFileSelected = useCallback((file: File) => {
         setImage(file);

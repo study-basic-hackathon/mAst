@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import CardEditor from '@/components/Card/CardEditor';
 import CardCreator from '@/components/Card/CardCreator';
 import { Part } from '@/hooks/parts/usePartsManager';
+import { usePartCreator } from '@/hooks/parts/usePartCreator';
+import { useCategories } from '@/hooks/useCategories';
 
 interface PartCardListProps {
   parts: Part[];
@@ -14,11 +16,14 @@ interface PartCardListProps {
 
 const PartCardList: React.FC<PartCardListProps> = ({ parts, initialParts, onQuantityChange, onDeleteClick, onImageClick, onSaveNewPart }) => {
   const [isCreating, setIsCreating] = useState(false);
+  const { categories } = useCategories();
 
-  const handleSave = (newPart: { title: string; categoryId: number; quantity: number; image?: File }) => {
+  const handleSaveWrapper = (newPart: { title: string; categoryId: number; quantity: number; image?: File }) => {
     onSaveNewPart(newPart);
     setIsCreating(false);
   };
+
+  const partCreator = usePartCreator({ onSave: handleSaveWrapper });
 
   return (
     <div className="cardList" style={{ display: 'grid', overflow: 'auto', flexGrow: 1, width: '100%', marginTop: '10px' }}>
@@ -27,7 +32,21 @@ const PartCardList: React.FC<PartCardListProps> = ({ parts, initialParts, onQuan
           <button onClick={() => setIsCreating(true)}>パーツを追加</button>
         </div>
       ) : (
-        <CardCreator onSave={handleSave} onCancel={() => setIsCreating(false)} />
+        <CardCreator
+          title={partCreator.title}
+          onTitleChange={e => partCreator.setTitle(e.target.value)}
+          categoryId={partCreator.categoryId}
+          onCategoryChange={e => partCreator.setCategoryId(Number(e.target.value))}
+          quantity={partCreator.quantity}
+          onQuantityChange={partCreator.setQuantity}
+          previewUrl={partCreator.previewUrl}
+          isSaveDisabled={partCreator.isSaveDisabled}
+          onSave={partCreator.handleSave}
+          onCancel={() => setIsCreating(false)}
+          triggerFileDialog={partCreator.triggerFileDialog}
+          getInputProps={partCreator.getInputProps}
+          categories={categories}
+        />
       )}
       {parts.length === 0 && !isCreating ? (
         <div style={{ textAlign: 'center', margin: '10px' }}>

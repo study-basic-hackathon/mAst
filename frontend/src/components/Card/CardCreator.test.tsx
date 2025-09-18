@@ -2,19 +2,14 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import CardCreator from './CardCreator';
-import * as usePartForm from '@/hooks/parts/usePartForm';
-import * as useCategories from '@/hooks/useCategories';
-
-vi.mock('@/hooks/parts/usePartForm');
-vi.mock('@/hooks/useCategories');
+import { Category } from '@/hooks/useCategories';
 
 describe('CardCreator', () => {
   const mockOnSave = vi.fn();
   const mockOnCancel = vi.fn();
-  const mockSetTitle = vi.fn();
-  const mockSetCategoryId = vi.fn();
-  const mockSetQuantity = vi.fn();
-  const mockHandleSave = vi.fn();
+  const mockOnTitleChange = vi.fn();
+  const mockOnCategoryChange = vi.fn();
+  const mockOnQuantityChange = vi.fn();
   const mockTriggerFileDialog = vi.fn();
   const mockGetInputProps = vi.fn(() => ({
     ref: React.createRef<HTMLInputElement>(),
@@ -24,35 +19,33 @@ describe('CardCreator', () => {
     type: 'file',
   } as const));
 
+  const categories: Category[] = [
+    { id: 1, name: 'Category A' },
+    { id: 2, name: 'Category B' },
+  ];
+
+  const defaultProps = {
+    title: '',
+    onTitleChange: mockOnTitleChange,
+    categoryId: '' as const,
+    onCategoryChange: mockOnCategoryChange,
+    quantity: 0,
+    onQuantityChange: mockOnQuantityChange,
+    previewUrl: null,
+    isSaveDisabled: true,
+    onSave: mockOnSave,
+    onCancel: mockOnCancel,
+    triggerFileDialog: mockTriggerFileDialog,
+    getInputProps: mockGetInputProps,
+    categories: categories,
+  };
+
   beforeEach(() => {
-    vi.spyOn(useCategories, 'useCategories').mockReturnValue({
-      categories: [
-        { id: 1, name: 'Category A' },
-        { id: 2, name: 'Category B' },
-      ],
-      error: null,
-    });
-
-    vi.spyOn(usePartForm, 'usePartForm').mockReturnValue({
-      title: '',
-      setTitle: mockSetTitle,
-      categoryId: '',
-      setCategoryId: mockSetCategoryId,
-      quantity: 0,
-      setQuantity: mockSetQuantity,
-      previewUrl: undefined,
-      isSaveDisabled: true,
-      handleSave: mockHandleSave,
-      triggerFileDialog: mockTriggerFileDialog,
-      getInputProps: mockGetInputProps,
-    });
-
-    mockOnSave.mockClear();
-    mockOnCancel.mockClear();
+    vi.clearAllMocks();
   });
 
-  const renderComponent = () => {
-    render(<CardCreator onSave={mockOnSave} onCancel={mockOnCancel} />);
+  const renderComponent = (props = {}) => {
+    render(<CardCreator {...defaultProps} {...props} />);
   };
 
   it('すべてのフォーム要素を描画する', () => {
@@ -64,37 +57,36 @@ describe('CardCreator', () => {
     expect(screen.getByTestId('cancel-button')).toBeInTheDocument();
   });
 
-  it('入力変更時にフック関数を呼び出す', () => {
+  it('入力変更時に対応するコールバック関数を呼び出す', () => {
     renderComponent();
-    fireEvent.change(screen.getByPlaceholderText(/部品名/i), { target: { value: 'New Part' } });
-    expect(mockSetTitle).toHaveBeenCalledWith('New Part');
+    const titleInput = screen.getByPlaceholderText(/部品名/i);
+    fireEvent.change(titleInput, { target: { value: 'New Part' } });
+    expect(mockOnTitleChange).toHaveBeenCalledTimes(1);
 
-    fireEvent.change(screen.getByRole('combobox'), { target: { value: '1' } });
-    expect(mockSetCategoryId).toHaveBeenCalledWith(1);
+    const categorySelect = screen.getByRole('combobox');
+    fireEvent.change(categorySelect, { target: { value: '1' } });
+    expect(mockOnCategoryChange).toHaveBeenCalledTimes(1);
 
-    fireEvent.click(screen.getByTestId('plus-button'));
-    expect(mockSetQuantity).toHaveBeenCalled();
+    // CustomNumberUpDownのテストは別途行うべきだが、ここではonChangeが呼ばれることを確認
+    const plusButton = screen.getByTestId('plus-button');
+    fireEvent.click(plusButton);
+    expect(mockOnQuantityChange).toHaveBeenCalledWith(1);
   });
 
-  it('無効でないときに保存ボタンをクリックするとhandleSaveを呼び出す', () => {
-    // ボタンが有効な状態をモックする
-    vi.spyOn(usePartForm, 'usePartForm').mockReturnValue({
-      title: 'Test',
-      setTitle: mockSetTitle,
-      categoryId: 1,
-      setCategoryId: mockSetCategoryId,
-      quantity: 0,
-      setQuantity: mockSetQuantity,
-      previewUrl: undefined,
-      isSaveDisabled: false, // isSaveDisabledをfalseに設定
-      handleSave: mockHandleSave,
-      triggerFileDialog: mockTriggerFileDialog,
-      getInputProps: mockGetInputProps,
-    });
+  it('保存ボタンが無効な場合、クリックしてもonSaveは呼び出されない', () => {
+    renderComponent({ isSaveDisabled: true });
+    const saveButton = screen.getByTestId('save-button');
+    expect(saveButton).toBeDisabled();
+    fireEvent.click(saveButton);
+    expect(mockOnSave).not.toHaveBeenCalled();
+  });
 
-    renderComponent();
-    fireEvent.click(screen.getByTestId('save-button'));
-    expect(mockHandleSave).toHaveBeenCalledTimes(1);
+  it('保存ボタンが有効な場合、クリックするとonSaveを呼び出す', () => {
+    renderComponent({ isSaveDisabled: false });
+    const saveButton = screen.getByTestId('save-button');
+    expect(saveButton).not.toBeDisabled();
+    fireEvent.click(saveButton);
+    expect(mockOnSave).toHaveBeenCalledTimes(1);
   });
 
   it('キャンセルボタンをクリックするとonCancelを呼び出す', () => {

@@ -1,26 +1,26 @@
 import { renderHook, act } from '@testing-library/react';
-import { usePartForm } from './usePartForm';
+import { usePartCreator } from './usePartCreator';
 import { describe, it, expect, vi } from 'vitest';
 
 // URL.createObjectURL is not defined in JSDOM, so we need to mock it.
 // see: frontend/src/test/setup.ts
 // global.URL.createObjectURL = vi.fn(() => 'mock-url');
 
-describe('usePartForm', () => {
+describe('usePartCreator', () => {
     it('デフォルト値で初期化されるべき', () => {
         const onSave = vi.fn();
-        const { result } = renderHook(() => usePartForm({ onSave }));
+        const { result } = renderHook(() => usePartCreator({ onSave }));
 
         expect(result.current.title).toBe('');
         expect(result.current.categoryId).toBe('');
         expect(result.current.quantity).toBe(0);
-        expect(result.current.previewUrl).toBeUndefined();
+        expect(result.current.previewUrl).toBeNull();
         expect(result.current.isSaveDisabled).toBe(true);
     });
 
     it('タイトルを更新すべき', () => {
         const onSave = vi.fn();
-        const { result } = renderHook(() => usePartForm({ onSave }));
+        const { result } = renderHook(() => usePartCreator({ onSave }));
 
         act(() => {
             result.current.setTitle('New Part');
@@ -31,7 +31,7 @@ describe('usePartForm', () => {
 
     it('カテゴリIDを更新すべき', () => {
         const onSave = vi.fn();
-        const { result } = renderHook(() => usePartForm({ onSave }));
+        const { result } = renderHook(() => usePartCreator({ onSave }));
 
         act(() => {
             result.current.setCategoryId(1);
@@ -42,7 +42,7 @@ describe('usePartForm', () => {
 
     it('数量を更新すべき', () => {
         const onSave = vi.fn();
-        const { result } = renderHook(() => usePartForm({ onSave }));
+        const { result } = renderHook(() => usePartCreator({ onSave }));
 
         act(() => {
             result.current.setQuantity(10);
@@ -53,7 +53,7 @@ describe('usePartForm', () => {
 
     it('タイトルとカテゴリIDが設定されたら保存ボタンを有効にすべき', () => {
         const onSave = vi.fn();
-        const { result } = renderHook(() => usePartForm({ onSave }));
+        const { result } = renderHook(() => usePartCreator({ onSave }));
 
         act(() => {
             result.current.setTitle('New Part');
@@ -65,7 +65,7 @@ describe('usePartForm', () => {
 
     it('正しいデータでonSaveを呼び出すべき', () => {
         const onSave = vi.fn();
-        const { result } = renderHook(() => usePartForm({ onSave }));
+        const { result } = renderHook(() => usePartCreator({ onSave }));
 
         act(() => {
             result.current.setTitle('New Part');
@@ -87,7 +87,7 @@ describe('usePartForm', () => {
 
     it('タイトルがない場合はonSaveを呼び出さないべき', () => {
         const onSave = vi.fn();
-        const { result } = renderHook(() => usePartForm({ onSave }));
+        const { result } = renderHook(() => usePartCreator({ onSave }));
 
         act(() => {
             result.current.setCategoryId(1);
@@ -102,7 +102,7 @@ describe('usePartForm', () => {
 
     it('カテゴリIDがない場合はonSaveを呼び出さないべき', () => {
         const onSave = vi.fn();
-        const { result } = renderHook(() => usePartForm({ onSave }));
+        const { result } = renderHook(() => usePartCreator({ onSave }));
 
         act(() => {
             result.current.setTitle('New Part');
