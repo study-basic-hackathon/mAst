@@ -13,11 +13,15 @@ router = APIRouter(
 )
 
 @router.get("", response_model=List[schemas.Part])
-def get_parts_data(db: mysql.connector.MySQLConnection = Depends(get_db_connection)):
+def get_parts_data(
+    name: Optional[str] = None,
+    category_id: Optional[int] = None,
+    db: mysql.connector.MySQLConnection = Depends(get_db_connection)
+):
     if db is None:
         raise HTTPException(status_code=503, detail="Database connection failed")
     try:
-        parts = crud_parts.get_all(db)
+        parts = crud_parts.get_all(db, name=name, category_id=category_id)
         return parts
     except mysql.connector.Error as e:
         raise HTTPException(status_code=500, detail=f"Database query error: {e}")

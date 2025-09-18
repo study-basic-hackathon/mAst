@@ -1,9 +1,8 @@
 import os
 
-def test_get_parts_data_success(client, mock_db_connection):
+def test_get_parts_data_success_no_filter(client, mock_db_connection):
     # 準備
     mock_cursor = mock_db_connection.cursor.return_value
-    # crud/parts.pyはdictionary=Trueのカーソルから辞書のリストを受け取ることを想定しています
     mock_cursor.fetchall.return_value = [
         {'id': 1, 'inventoryId': 101, 'title': 'Part A', 'category': 'Category A', 'quantity': 10, 'imageUrl': 'http://example.com/a.jpg'},
         {'id': 2, 'inventoryId': 102, 'title': 'Part B', 'category': 'Category B', 'quantity': 20, 'imageUrl': 'http://example.com/b.jpg'},
@@ -14,12 +13,66 @@ def test_get_parts_data_success(client, mock_db_connection):
 
     # 検証
     assert response.status_code == 200
-    # レスポンスはPartスキーマと一致する必要があります
     expected_data = [
         {'id': 1, 'inventoryId': 101, 'title': 'Part A', 'category': 'Category A', 'quantity': 10, 'imageUrl': 'http://example.com/a.jpg'},
         {'id': 2, 'inventoryId': 102, 'title': 'Part B', 'category': 'Category B', 'quantity': 20, 'imageUrl': 'http://example.com/b.jpg'},
     ]
     assert response.json() == expected_data
+    # crud.get_all が引数なしで呼ばれたことを確認
+    mock_db_connection.cursor.return_value.execute.assert_called_with(
+        "\n        SELECT\n            p.id,\n            i.id as inventoryId,\n            p.p_name AS title,\n            c.name AS category,\n            i.quantity,\n            COALESCE(p.imageUrl, '') AS imageUrl\n        FROM Parts p\n        JOIN Inventory i ON p.id = i.parts_id\n        JOIN Category c ON p.c_id = c.id\n    ",
+        ()
+    )
+
+def test_get_parts_data_success_with_name_filter(client, mock_db_connection):
+    # 準備
+    mock_cursor = mock_db_connection.cursor.return_value
+    mock_cursor.fetchall.return_value = [
+        {'id': 1, 'inventoryId': 101, 'title': 'Part A', 'category': 'Category A', 'quantity': 10, 'imageUrl': 'http://example.com/a.jpg'},
+    ]
+    search_name = "Part A"
+
+    # 実行
+    response = client.get(f"/parts?name={search_name}")
+
+    # 検証
+    assert response.status_code == 200
+    expected_data = [
+        {'id': 1, 'inventoryId': 101, 'title': 'Part A', 'category': 'Category A', 'quantity': 10, 'imageUrl': 'http://example.com/a.jpg'},
+    ]
+    assert response.json() == expected_data
+    # crud.get_all が LIKE 句付きのクエリで呼ばれたことを確認
+    expected_query = (
+        "\n        SELECT\n            p.id,\n            i.id as inventoryId,\n            p.p_name AS title,\n            c.name AS category,\n            i.quantity,\n            COALESCE(p.imageUrl, '') AS imageUrl\n        FROM Parts p\n        JOIN Inventory i ON p.id = i.parts_id\n        JOIN Category c ON p.c_id = c.id\n     WHERE p.p_name LIKE %s"
+    )
+    mock_db_connection.cursor.return_value.execute.assert_called_with(
+        expected_query,
+        (f"%{search_name}%",)
+    )
+
+def test_get_parts_data_success_with_category_filter(client, mock_db_connection):
+    # 準備
+    mock_cursor = mock_db_connection.cursor.return_value
+    mock_cursor.fetchall.return_value = [
+        {'id': 2, 'inventoryId': 102, 'title': 'Part B', 'category': 'Category B', 'quantity': 20, 'imageUrl': 'http://example.com/b.jpg'},
+    ]
+    search_category_id = 2
+
+    # 実行
+    response = client.get(f"/parts?category_id={search_category_id}")
+
+    # 検証
+    assert response.status_code == 200
+    expected_data = [
+        {'id': 2, 'inventoryId': 102, 'title': 'Part B', 'category': 'Category B', 'quantity': 20, 'imageUrl': 'http://example.com/b.jpg'},
+    ]
+    assert response.json() == expected_data
+    # crud.get_all が WHERE 句付きのクエリで呼ばれたことを確認
+    # (実際のクエリはcrudの実装に依存する)
+    # ここでは、executeが正しいパラメータで呼ばれたかを検証する
+    args, kwargs = mock_db_connection.cursor.return_value.execute.call_args
+    assert "WHERE p.c_id = %s" in args[0]
+    assert args[1] == (search_category_id,)
 
 def test_delete_part_success(client, mock_db_connection):
     # 準備
