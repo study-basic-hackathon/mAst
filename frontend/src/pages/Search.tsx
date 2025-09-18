@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import CardView from "@/components/Card/CardView";
 import { usePartsQuery } from '@/hooks/usePartsQuery';
+import { useCategories } from "@/hooks/useCategories";
 
 const Search: React.FC = () => {
     const {
@@ -8,43 +9,68 @@ const Search: React.FC = () => {
         isLoading,
         error,
         reload,
+        search, // search関数を取得
     } = usePartsQuery();
+    const { categories } = useCategories();
+
+    const [partName, setPartName] = useState('');
+    const [selectedCategoryId, setSelectedCategoryId] = useState<number | undefined>(undefined);
+
+    const handleSearch = () => {
+        const criteria: { name?: string; categoryId?: number } = {};
+        if (partName) {
+            criteria.name = partName;
+        }
+        if (selectedCategoryId) {
+            criteria.categoryId = selectedCategoryId;
+        }
+        search?.(criteria);
+    };
 
     return (
         <>
             <h1>検索・一覧画面</h1>
             
-            {/* 検索フォーム（将来の機能） */}
+            {/* 検索フォーム */}
             <div style={{ marginBottom: '20px', display: 'flex', gap: '10px', alignItems: 'flex-end' }}>
                 <div>
                     <label>部品名</label>
                     <input 
                         type="text" 
                         placeholder="部品名で検索" 
+                        value={partName}
+                        onChange={(e) => setPartName(e.target.value)}
                         style={{ 
                             padding: '8px', 
                             marginLeft: '10px',
                             border: '1px solid #ccc',
                             borderRadius: '4px'
                         }}
-                        disabled // 将来の機能として無効化
                     />
                 </div>
                 <div>
-                    <label>カテゴリ</label>
-                    <select 
+                    <label htmlFor="category-select">カテゴリ</label>
+                    <select
+                        id="category-select"
+                        value={selectedCategoryId ?? ''}
+                        onChange={(e) => setSelectedCategoryId(e.target.value ? Number(e.target.value) : undefined)}
                         style={{ 
                             padding: '8px', 
                             marginLeft: '10px',
                             border: '1px solid #ccc',
                             borderRadius: '4px'
                         }}
-                        disabled // 将来の機能として無効化
                     >
-                        <option>すべて</option>
+                        <option value="">すべて</option>
+                        {categories.map((category) => (
+                            <option key={category.id} value={category.id}>
+                                {category.name}
+                            </option>
+                        ))}
                     </select>
                 </div>
                 <button 
+                    onClick={handleSearch}
                     style={{ 
                         padding: '8px 16px',
                         backgroundColor: '#22c55e',
@@ -53,7 +79,6 @@ const Search: React.FC = () => {
                         borderRadius: '4px',
                         cursor: 'pointer'
                     }}
-                    disabled // 将来の機能として無効化
                 >
                     検索
                 </button>
