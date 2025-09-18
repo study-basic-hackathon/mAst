@@ -37,7 +37,10 @@ const Edit: React.FC = () => {
     onConfirmDelete: handleDelete,
   });
 
-  const blocker = useBlocker(hasChanges);
+  const blocker = useBlocker(
+    ({ currentLocation, nextLocation }) =>
+      hasChanges && currentLocation.pathname !== nextLocation.pathname
+  );
 
   useEffect(() => {
     if (blocker.state === 'blocked') {

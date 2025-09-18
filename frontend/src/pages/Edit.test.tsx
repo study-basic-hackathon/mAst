@@ -1,7 +1,7 @@
 /// <reference types="vitest" />
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { MemoryRouter, useBlocker } from 'react-router-dom';
+import { MemoryRouter } from 'react-router-dom';
 import Edit from '@/pages/Edit';
 import React from 'react';
 import { usePartsManager } from '@/hooks/parts/usePartsManager';
@@ -53,16 +53,14 @@ vi.mock('@/hooks/ui/useEditPageModals', () => ({
 }));
 
 // react-router-dom の useBlocker をモック化
-const mockBlocker = {
-  proceed: vi.fn(),
-  reset: vi.fn(),
-  state: 'blocked' as const,
-};
+const { mockUseBlocker } = vi.hoisted(() => {
+  return { mockUseBlocker: vi.fn() };
+});
 vi.mock('react-router-dom', async (importOriginal) => {
     const actual = await importOriginal<typeof import('react-router-dom')>();
     return {
         ...actual,
-        useBlocker: vi.fn(() => mockBlocker),
+        useBlocker: mockUseBlocker,
     };
 });
 
@@ -70,21 +68,12 @@ vi.mock('react-router-dom', async (importOriginal) => {
 describe('Edit ページ', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-  });
-
-  it('変更がある状態で画面遷移しようとすると、確認モーダルが開かれるべき', () => {
-    render(
-      <MemoryRouter>
-        <Edit />
-      </MemoryRouter>
-    );
-
-    // useBlockerがhasChanges=trueで呼び出されることを確認
-    expect(useBlocker).toHaveBeenCalledWith(true);
-
-    // Editコンポーネントはblocker.stateが'blocked'の時にモーダルを開くので、
-    // モックされたblockerの状態を利用して、モーダルが開かれることを確認する
-    expect(mockOpenUnsavedChangesModal).toHaveBeenCalled();
+    // useBlockerにデフォルトのモック値を設定
+    mockUseBlocker.mockReturnValue({
+      state: 'unblocked',
+      proceed: vi.fn(),
+      reset: vi.fn(),
+    });
   });
 
   it('検索フォームが表示され、検索を実行できるべき', () => {
@@ -127,5 +116,71 @@ describe('Edit ページ', () => {
 
     // search関数が正しい引数で呼び出されたことを確認
     expect(mockSearch).toHaveBeenCalledWith({ name: 'Test Part', categoryId: 1 });
+  });
+
+  describe('画面遷移ブロックのロジック', () => {
+    beforeEach(() => {
+      (usePartsManager as Mock).mockReturnValue({
+        parts: [],
+        initialParts: [],
+        isUpdating: false,
+        error: null,
+        hasChanges: true, // 変更がある状態
+        handleQuantityChange: vi.fn(),
+        stageImageChange: vi.fn(),
+        handleCancel: vi.fn(),
+        handleUpdate: vi.fn(),
+        handleDelete: vi.fn(),
+        handleSaveNewPart: vi.fn(),
+        isUpdateSuccessful: false,
+        resetUpdateStatus: vi.fn(),
+        search: mockSearch,
+      });
+      mockUseBlocker.mockClear();
+    });
+
+    it('変更がある場合、異なるページへの遷移はブロックされるべき', () => {
+      mockUseBlocker.mockImplementation((fn) => {
+        const result = fn({
+          currentLocation: { pathname: '/edit' },
+          nextLocation: { pathname: '/search' },
+        });
+        // useBlockerに渡した関数がtrueを返すことを確認
+        expect(result).toBe(true);
+        // ブロックされた状態を返すモック
+        return { state: 'blocked', proceed: vi.fn(), reset: vi.fn() };
+      });
+
+      render(
+        <MemoryRouter>
+          <Edit />
+        </MemoryRouter>
+      );
+
+      // モーダルが開かれることを確認
+      expect(mockOpenUnsavedChangesModal).toHaveBeenCalled();
+    });
+
+    it('変更がある場合でも、同じページへの遷移はブロックされないべき', () => {
+      mockUseBlocker.mockImplementation((fn) => {
+        const result = fn({
+          currentLocation: { pathname: '/edit' },
+          nextLocation: { pathname: '/edit' },
+        });
+        // useBlockerに渡した関数がfalseを返すことを確認
+        expect(result).toBe(false);
+        // ブロックされない状態を返すモック
+        return { state: 'unblocked', proceed: vi.fn(), reset: vi.fn() };
+      });
+
+      render(
+        <MemoryRouter>
+          <Edit />
+        </MemoryRouter>
+      );
+
+      // モーダルが開かれないことを確認
+      expect(mockOpenUnsavedChangesModal).not.toHaveBeenCalled();
+    });
   });
 });
