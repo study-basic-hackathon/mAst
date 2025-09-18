@@ -12,6 +12,7 @@ export const usePartsManager = () => {
     isLoading,
     error: queryError,
     reload,
+    search,
   } = usePartsQuery();
   const {
     isUpdating,
@@ -64,5 +65,6 @@ export const usePartsManager = () => {
     handleSaveNewPart: createPart,
     isUpdateSuccessful,
     resetUpdateStatus,
+    search,
   };
 };
