@@ -2,9 +2,11 @@ import React, { useEffect } from 'react';
 import { useBlocker } from 'react-router-dom';
 import PartCardList from '@/components/page_components/Edit/PartCardList';
 import EditPageActions from '@/components/page_components/Edit/EditPageActions';
-import { usePartsManager } from '@/hooks/usePartsManager';
-import { useImageUploader } from '@/hooks/useImageUploader';
-import { useEditPageModals } from '@/hooks/useEditPageModals';
+import SearchForm from '@/components/common/SearchForm';
+import { usePartsManager } from '@/hooks/parts/usePartsManager';
+import { useImageUploader } from '@/hooks/ui/useImageUploader';
+import { useEditPageModals } from '@/hooks/ui/useEditPageModals';
+import { useCategories } from '@/hooks/useCategories';
 
 const Edit: React.FC = () => {
   const {
@@ -21,7 +23,10 @@ const Edit: React.FC = () => {
     handleSaveNewPart,
     isUpdateSuccessful,
     resetUpdateStatus,
+    search,
   } = usePartsManager();
+
+  const { categories } = useCategories();
 
   const {
     openDeleteModal,
@@ -32,7 +37,10 @@ const Edit: React.FC = () => {
     onConfirmDelete: handleDelete,
   });
 
-  const blocker = useBlocker(hasChanges);
+  const blocker = useBlocker(
+    ({ currentLocation, nextLocation }) =>
+      hasChanges && currentLocation.pathname !== nextLocation.pathname
+  );
 
   useEffect(() => {
     if (blocker.state === 'blocked') {
@@ -64,8 +72,8 @@ const Edit: React.FC = () => {
     <div style={{ height: '100%', width: '100%', display: 'flex', flexDirection: 'column' }}>
       <ModalsComponent />
       <input {...getInputProps()} />
-      <div className="searchArea" style={{ alignItems: 'flex-start', flexBasis: '30%' }}>
-        <div className="searchBox" style={{ height: '100%', width: '100%', backgroundColor: 'violet' }}></div>
+      <div className="searchArea" style={{ padding: '20px' }}>
+        <SearchForm categories={categories} onSearch={search} />
       </div>
 
       {error && <div style={{ color: 'red', padding: '10px', textAlign: 'center' }}>{error}</div>}

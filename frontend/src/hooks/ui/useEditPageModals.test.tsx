@@ -4,12 +4,12 @@ import { useEditPageModals } from './useEditPageModals';
 import React from 'react';
 
 // ConfirmationModalとNotificationModalをモック化
-vi.mock('../components/Modal/ConfirmationModal', () => ({
+vi.mock('@/components/Modal/ConfirmationModal', () => ({
   default: ({ isOpen, message }: { isOpen: boolean, message: string }) =>
     isOpen ? <div data-testid="confirmation-modal">{message}</div> : null,
 }));
 
-vi.mock('../components/Modal/NotificationModal', () => ({
+vi.mock('@/components/Modal/NotificationModal', () => ({
   default: ({ isOpen, message }: { isOpen: boolean, message: string }) =>
     isOpen ? <div data-testid="notification-modal">{message}</div> : null,
 }));

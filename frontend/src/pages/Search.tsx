@@ -1,6 +1,6 @@
 import React from "react";
 import CardView from "@/components/Card/CardView";
-import { usePartsQuery } from '@/hooks/usePartsQuery';
+import { usePartsQuery } from '@/hooks/parts/usePartsQuery';
 import { useCategories } from "@/hooks/useCategories";
 import SearchForm from "@/components/common/SearchForm";
 

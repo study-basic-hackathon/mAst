@@ -20,11 +20,15 @@ describe('usePartsManager', () => {
   const mockResetUpdateStatus = vi.fn();
 
   // モックの基本値を定義
+  const mockSearch = vi.fn();
+
+  // モックの基本値を定義
   const baseMockUsePartsQuery = {
     parts: mockInitialParts,
     isLoading: false,
     error: null,
     reload: mockReload,
+    search: mockSearch,
   };
 
   const baseMockUsePartsCommand = {
@@ -119,5 +123,17 @@ describe('usePartsManager', () => {
 
     expect(result.current.isUpdateSuccessful).toBe(true);
     expect(result.current.resetUpdateStatus).toBe(mockResetUpdateStatus);
+  });
+
+  it('usePartsQuery から search 関数を正しく返す', () => {
+    const { result } = renderHook(() => usePartsManager());
+
+    expect(result.current.search).toBe(mockSearch);
+    
+    act(() => {
+      result.current.search({ name: 'test' });
+    });
+
+    expect(mockSearch).toHaveBeenCalledWith({ name: 'test' });
   });
 });

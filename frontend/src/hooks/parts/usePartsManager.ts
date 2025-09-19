@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { Part } from '@/api/partsApi';
-import { usePartsState } from '@/hooks/usePartsState';
+import { usePartsState } from '@/hooks/parts/usePartsState';
 import { usePartsQuery } from './usePartsQuery';
 import { usePartsCommand } from './usePartsCommand';
 
@@ -12,6 +12,7 @@ export const usePartsManager = () => {
     isLoading,
     error: queryError,
     reload,
+    search,
   } = usePartsQuery();
   const {
     isUpdating,
@@ -64,5 +65,6 @@ export const usePartsManager = () => {
     handleSaveNewPart: createPart,
     isUpdateSuccessful,
     resetUpdateStatus,
+    search,
   };
 };

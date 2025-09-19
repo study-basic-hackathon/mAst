@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
-import { useConfirmationModal } from '@/hooks/useConfirmationModal';
-import { useNotificationModal } from '@/hooks/useNotificationModal';
+import { useConfirmationModal } from '@/hooks/ui/useConfirmationModal';
+import { useNotificationModal } from '@/hooks/ui/useNotificationModal';
 import ConfirmationModal from '@/components/Modal/ConfirmationModal';
 import NotificationModal from '@/components/Modal/NotificationModal';
 import { Part } from '@/api/partsApi';
