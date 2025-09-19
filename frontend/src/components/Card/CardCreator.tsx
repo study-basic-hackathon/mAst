@@ -46,12 +46,12 @@ interface ActionButtonsProps {
 // --- UI Components ---
 
 const TitleInput: React.FC<TitleInputProps> = ({ value, onChange }) => (
-    <input type="text" value={value} onChange={onChange} placeholder="部品名" style={{ width: '100%', fontSize: '23px', fontWeight: 'bold', border: 'none', outline: 'none' }} />
+    <input type="text" value={value} onChange={onChange} placeholder="部品名" style={{ fontSize: '23px', fontWeight: 'bold', border: 'none', outline: 'none' }} />
 );
 
 const CategorySelect: React.FC<CategorySelectProps> = ({ value, onChange, categories }) => {
     return (
-        <select value={value} onChange={onChange} style={{ width: '100%', fontSize: '16px', border: 'none', outline: 'none' }}>
+        <select value={value} onChange={onChange} style={{ fontSize: '16px', border: 'none', outline: 'none' }}>
             <option value="">カテゴリーを選択</option>
             {categories.map(cat => (
                 <option key={cat.id} value={cat.id}>{cat.name}</option>
