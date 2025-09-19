@@ -26,7 +26,7 @@ const PartCardList: React.FC<PartCardListProps> = ({ parts, initialParts, onQuan
   const partCreator = usePartCreator({ onSave: handleSaveWrapper });
 
   return (
-    <div className="cardList" style={{ display: 'grid', overflow: 'auto', flexGrow: 1, width: '100%', marginTop: '10px' }}>
+    <div className="cardList" style={{ display: 'flex', flexDirection:'column', overflow: 'auto', flexGrow: 1, width: '100%', marginTop: '10px' }}>
       {!isCreating ? (
         <div style={{ textAlign: 'center', margin: '10px' }}>
           <button onClick={() => setIsCreating(true)}>パーツを追加</button>
