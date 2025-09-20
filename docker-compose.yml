@@ -6,15 +6,6 @@ services:
       context: ./frontend
       dockerfile: ./docker/Dockerfile.dev
     restart: always
-    environment:
-      # DB接続先ホスト名
-      MYSQL_HOST: db
-      # DBログインユーザ名
-      MYSQL_USER: ${MYSQL_DATABASE}
-      # DBログインユーザパスワードを設定
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      # DB接続先データベースを設定
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
     volumes:
       # ホストのコードをコンテナにマウント（開発用）
       - ./frontend:/app
@@ -33,6 +24,15 @@ services:
       context: ./backend
       dockerfile: ./docker/Dockerfile.dev
     restart: always
+    environment:
+      # DB接続先ホスト名
+      MYSQL_HOST: db
+      # DBログインユーザ名
+      MYSQL_USER: ${MYSQL_USER}
+      # DBログインユーザパスワードを設定
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      # DB接続先データベースを設定
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
     volumes:
       # ホストのコードをコンテナにマウント
       - ./backend:/app
