@@ -11,8 +11,8 @@ app = FastAPI()
 # MySQL接続設定
 DB_HOST = os.getenv("MYSQL_HOST", "db")
 DB_USER = os.getenv("MYSQL_USER", "root")
-DB_PASSWORD = os.getenv("MYSQL_PASSWORD", "password")
-DB_NAME = os.getenv("MYSQL_DATABASE", "myappdb")
+DB_PASSWORD = os.getenv("MYSQL_PASSWORD", "mast2509")
+DB_NAME = os.getenv("MYSQL_DATABASE", "mast")
 
 # データベース接続関数
 def get_db_connection():
@@ -42,7 +42,7 @@ def get_db_data():
 
     try:
         cursor = conn.cursor()
-        cursor.execute("SELECT message FROM messages WHERE id = 1")
+        cursor.execute("SELECT * FROM Inventory")
         result = cursor.fetchone()
         if result:
             db_message = result[0]
