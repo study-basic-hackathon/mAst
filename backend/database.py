@@ -9,8 +9,8 @@ load_dotenv()
 
 # データベース接続設定
 DB_HOST = os.getenv("MYSQL_HOST", "db")
-DB_USER = os.getenv("MYSQL_USER", "root")
-DB_PASSWORD = os.getenv("MYSQL_PASSWORD", "mast2509")
+DB_USER = os.getenv("MYSQL_USER", "mast_user")
+DB_PASSWORD = os.getenv("MYSQL_PASSWORD", "password")
 DB_NAME = os.getenv("MYSQL_DATABASE", "mast")
 
 # 接続プールの設定
@@ -22,7 +22,7 @@ db_config = {
 }
 
 # 接続試行の最大回数と待機時間
-MAX_RETRIES = 5
+MAX_RETRIES = 10
 RETRY_DELAY = 5
 
 retries = 0
