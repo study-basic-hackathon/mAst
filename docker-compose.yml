@@ -1,4 +1,23 @@
 services:
+  # Reactフロントエンドサービス
+  frontend:
+    container_name: react_frontend
+    build:
+      context: ./frontend
+      dockerfile: ./docker/Dockerfile.dev
+    restart: always
+    volumes:
+      # ホストのコードをコンテナにマウント（開発用）
+      - ./frontend:/app
+      - /app/node_modules
+    # ビルド後の成果物をvolumesとして定義
+    expose:
+      - "5173"
+    ports:
+      - "5173:5173"
+    networks:
+      - app-network
+    command: npm run dev -- --host 0.0.0.0
 
   # MySQLデータベースサービス
   db:
@@ -26,26 +45,12 @@ services:
       - db_data:/var/lib/mysql
       # 起動時に実行される初期化SQLスクリプトをマウント
       - ./database/:/docker-entrypoint-initdb.d/
-
-  # Reactフロントエンドサービス
-  frontend:
-    container_name: react_frontend
-    build:
-      context: ./frontend
-      dockerfile: ./docker/Dockerfile.dev
-    restart: always
-    volumes:
-      # ホストのコードをコンテナにマウント（開発用）
-      - ./frontend:/app
-      - /app/node_modules
-    # ビルド後の成果物をvolumesとして定義
-    expose:
-      - "5173"
-    ports:
-      - "5173:5173"
-    networks:
-      - app-network
-    command: npm run dev -- --host 0.0.0.0
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -p$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+      start_period: 20s
 
   # FastAPIバックエンドサービス
   backend:
