@@ -6,6 +6,13 @@ import path from 'path'
 export default defineConfig({
   plugins: [react()],
   server: {
+    // 公開用に設定を追加
+    host: true,
+    port: 5173,
+    strictPort: true,
+    allowedHosts: [
+      '.compute.amazonaws.com'
+    ],
     // 開発サーバー用のプロキシ設定
     proxy: {
       // /apiで始まるリクエストをバックエンドへ転送
