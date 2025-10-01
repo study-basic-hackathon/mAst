@@ -1,4 +1,32 @@
 services:
+
+  # MySQLデータベースサービス
+  db:
+    container_name: mysql_db
+    image: mysql:8.0
+    # init.sqlの文字化け対策
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --skip-character-set-client-handshake
+    restart: always
+    environment:
+      # MySQLのrootパスワードを設定
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      # MySQLのデフォルトデータベースを設定
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      # MySQLの一般ユーザ名を設定
+      MYSQL_USER: ${MYSQL_USER}
+      # MySQLの一般ユーザパスワードを設定
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    # MySQLのポートを外部に公開する場合
+    ports:
+      - "3306:3306"
+    networks:
+      - app-network
+    volumes:
+      # データベースのデータを永続化
+      - db_data:/var/lib/mysql
+      # 起動時に実行される初期化SQLスクリプトをマウント
+      - ./database/:/docker-entrypoint-initdb.d/
+
   # Reactフロントエンドサービス
   frontend:
     container_name: react_frontend
@@ -46,33 +74,6 @@ services:
       - app-network
     depends_on:
       - db
-
-  # MySQLデータベースサービス
-  db:
-    container_name: mysql_db
-    image: mysql:8.0
-    # init.sqlの文字化け対策
-    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --skip-character-set-client-handshake
-    restart: always
-    environment:
-      # MySQLのrootパスワードを設定
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      # MySQLのデフォルトデータベースを設定
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      # MySQLの一般ユーザ名を設定
-      MYSQL_USER: ${MYSQL_USER}
-      # MySQLの一般ユーザパスワードを設定
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-    # MySQLのポートを外部に公開する場合
-    ports:
-      - "3306:3306"
-    networks:
-      - app-network
-    volumes:
-      # データベースのデータを永続化
-      - db_data:/var/lib/mysql
-      # 起動時に実行される初期化SQLスクリプトをマウント
-      - ./database/:/docker-entrypoint-initdb.d/
 
 # 永続化のためのボリュームを定義
 volumes:
