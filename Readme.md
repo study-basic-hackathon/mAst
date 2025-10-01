@@ -26,6 +26,7 @@
 
 ### インフラ
 - Docker
+- AWS(EC2,CloudWatch, S3予定, IAM予定)
 
 ## 開発環境の構築と起動
 
@@ -87,3 +88,6 @@ docker compose -f docker-compose.test.yml up --build --abort-on-container-exit
 
 ### テスト用データベース
 - MySQLサーバー (テスト用): `localhost:3307`
+
+### デプロイについて
+- AWS EC2にテスト環境としてデプロイ済みです。デプロイ先を確認したい場合は、デプロイ担当までご連絡ください。
